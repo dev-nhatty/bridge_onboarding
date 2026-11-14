@@ -1,0 +1,22 @@
+{
+  "name": "bridge-onboarding",
+  "private": true,
+  "type": "module",
+  "version": "0.1.0",
+  "description": "Accessible login and registration wizard plug-in (Digital Bridge, Track 1)",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev -w @bridge/server",
+    "dev:widget": "npm run dev -w @bridge/widget",
+    "build": "npm run build -w @bridge/widget",
+    "start": "npm start -w @bridge/server",
+    "test": "npm test -w @bridge/server && npm test -w @bridge/widget",
+    "test:e2e": "npm run build && playwright test"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.10.0",
+    "@playwright/test": "^1.63.0"
+  }
+}

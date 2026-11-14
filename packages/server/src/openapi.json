@@ -1,0 +1,108 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Digital Bridge Accessible Onboarding API",
+    "version": "0.1.0",
+    "description": "Backend for the accessible login and registration wizard. The wizard saves a draft after every question, so a learner can resume on any device. Passwords are never stored in drafts."
+  },
+  "servers": [{ "url": "/api" }],
+  "paths": {
+    "/health": { "get": { "summary": "Health check", "responses": { "200": { "description": "OK" } } } },
+    "/drafts": {
+      "post": {
+        "summary": "Create a draft registration",
+        "requestBody": { "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Prefs" } } } },
+        "responses": { "201": { "description": "Draft created; the token is also the resume token", "content": { "application/json": { "schema": { "type": "object", "properties": { "token": { "type": "string" } } } } } } }
+      }
+    },
+    "/drafts/{token}": {
+      "parameters": [{ "$ref": "#/components/parameters/Token" }],
+      "get": {
+        "summary": "Load a draft to resume",
+        "responses": { "200": { "description": "The saved answers", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Draft" } } } }, "404": { "$ref": "#/components/responses/Error" } }
+      },
+      "patch": {
+        "summary": "Autosave answers (replaces the saved answers)",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/DraftPatch" } } } },
+        "responses": { "200": { "description": "Saved" }, "400": { "$ref": "#/components/responses/Error" }, "404": { "$ref": "#/components/responses/Error" } }
+      }
+    },
+    "/drafts/{token}/send-link": {
+      "parameters": [{ "$ref": "#/components/parameters/Token" }],
+      "post": { "summary": "Send the learner a resume link by SMS/email (mocked in the starter)", "responses": { "200": { "description": "Sent" }, "400": { "$ref": "#/components/responses/Error" } } }
+    },
+    "/drafts/{token}/submit": {
+      "parameters": [{ "$ref": "#/components/parameters/Token" }],
+      "post": {
+        "summary": "Create the account from the draft",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["password"], "properties": { "password": { "type": "string", "minLength": 8 } } } } } },
+        "responses": { "201": { "description": "Account created", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Session" } } } }, "400": { "$ref": "#/components/responses/Error" }, "409": { "$ref": "#/components/responses/Error" } }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Log in with phone or email and password",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "type": "object", "required": ["identifier", "password"], "properties": { "identifier": { "type": "string" }, "password": { "type": "string" } } } } } },
+        "responses": { "200": { "description": "Logged in", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Session" } } } }, "401": { "$ref": "#/components/responses/Error" } }
+      }
+    },
+    "/jobs": {
+      "get": {
+        "summary": "List jobs; optionally only those that offer ALL of the listed supports",
+        "parameters": [{ "name": "support", "in": "query", "schema": { "type": "string" }, "description": "Comma-separated support codes, e.g. screenReader,captions" }],
+        "responses": { "200": { "description": "Jobs", "content": { "application/json": { "schema": { "type": "object", "properties": { "jobs": { "type": "array", "items": { "$ref": "#/components/schemas/Job" } } } } } } } }
+      },
+      "post": {
+        "summary": "Employer form: add a job and the accommodations it offers",
+        "requestBody": { "required": true, "content": { "application/json": { "schema": { "$ref": "#/components/schemas/JobInput" } } } },
+        "responses": { "201": { "description": "Created" }, "400": { "$ref": "#/components/responses/Error" } }
+      }
+    },
+    "/jobs/{id}/apply": {
+      "post": {
+        "summary": "Apply for a job",
+        "security": [{ "bearer": [] }],
+        "parameters": [{ "name": "id", "in": "path", "required": true, "schema": { "type": "integer" } }],
+        "requestBody": { "content": { "application/json": { "schema": { "type": "object", "properties": { "answer": { "type": "string", "maxLength": 2000 } } } } } },
+        "responses": { "201": { "description": "Application received" }, "401": { "$ref": "#/components/responses/Error" }, "404": { "$ref": "#/components/responses/Error" } }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": { "bearer": { "type": "http", "scheme": "bearer", "bearerFormat": "JWT" } },
+    "parameters": { "Token": { "name": "token", "in": "path", "required": true, "schema": { "type": "string", "pattern": "^[a-f0-9]{32}$" } } },
+    "responses": {
+      "Error": {
+        "description": "Plain error",
+        "content": { "application/json": { "schema": { "type": "object", "properties": { "error": { "type": "object", "properties": { "code": { "type": "string" }, "message": { "type": "string" } } } } } } }
+      }
+    },
+    "schemas": {
+      "Support": { "type": "string", "enum": ["screenReader", "captions", "signLanguage", "extraTime", "largeText"] },
+      "Prefs": { "type": "object", "properties": { "lang": { "type": "string", "enum": ["en", "am"] }, "mode": { "type": "string", "enum": ["normal", "simple"] } } },
+      "Answers": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fullName": { "type": "string" },
+          "contact": { "type": "string", "description": "Phone or email" },
+          "idRoute": { "type": "string", "enum": ["kebele", "refugee", "other", "referral"] },
+          "idNumber": { "type": "string" },
+          "support": { "type": "array", "items": { "$ref": "#/components/schemas/Support" } },
+          "supportNote": { "type": "string" }
+        }
+      },
+      "Draft": { "type": "object", "properties": { "answers": { "$ref": "#/components/schemas/Answers" }, "stepIndex": { "type": "integer" }, "lang": { "type": "string" }, "mode": { "type": "string" } } },
+      "DraftPatch": { "type": "object", "required": ["answers"], "properties": { "answers": { "$ref": "#/components/schemas/Answers" }, "stepIndex": { "type": "integer" }, "lang": { "type": "string" }, "mode": { "type": "string" } } },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "token": { "type": "string" },
+          "user": { "type": "object", "properties": { "id": { "type": "integer" }, "fullName": { "type": "string" }, "support": { "type": "array", "items": { "$ref": "#/components/schemas/Support" } } } }
+        }
+      },
+      "Job": { "type": "object", "properties": { "id": { "type": "integer" }, "title": { "type": "string" }, "company": { "type": "string" }, "location": { "type": "string", "nullable": true }, "accommodations": { "type": "array", "items": { "$ref": "#/components/schemas/Support" } } } },
+      "JobInput": { "type": "object", "required": ["title", "company", "accommodations"], "properties": { "title": { "type": "string" }, "company": { "type": "string" }, "location": { "type": "string" }, "accommodations": { "type": "array", "items": { "$ref": "#/components/schemas/Support" } } } }
+    }
+  }
+}

@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Savanna (demo host) – Join Digital Bridge</title>
+  <style>
+    body { font-family: Georgia, serif; margin: 0; background: #f4f1ea; color: #1b1b1b; }
+    header { background: #1b3a2f; color: #fff; padding: 1rem; }
+    main { max-width: 40rem; margin: 0 auto; padding: 1rem; }
+    pre { background: #fff; padding: .75rem; overflow: auto; border: 1px solid #ccc; }
+  </style>
+</head>
+<body>
+  <header><strong>Savanna</strong> – demo host page (not part of the plug-in)</header>
+  <main>
+    <h1>Join Digital Bridge</h1>
+    <p>The sign-up below is the plug-in. This page only adds one script tag.</p>
+
+    <!-- LEVEL 1 INSTALL: this is the whole integration. -->
+    <div id="signup"></div>
+    <script src="/widget/bridge-onboarding.js"
+            data-target="#signup"
+            data-api="/api"
+            data-lang="en"></script>
+
+    <h2>What the host page hears</h2>
+    <p>The plug-in tells the host page about events, so the host can create its own session.</p>
+    <pre id="log" aria-live="polite">(no events yet)</pre>
+    <script>
+      const log = document.getElementById('log');
+      ['bridge:ready', 'bridge:registered', 'bridge:login'].forEach((name) =>
+        document.getElementById('signup').addEventListener(name, (e) => {
+          const detail = { ...e.detail }; delete detail.token;      // never print tokens
+          log.textContent = (log.textContent.startsWith('(') ? '' : log.textContent + '\n') + name + ' ' + JSON.stringify(detail);
+        }));
+    </script>
+  </main>
+</body>
+</html>

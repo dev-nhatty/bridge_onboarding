@@ -1,0 +1,6 @@
+{
+  "name": "@bridge/demo-host",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A plain HTML page standing in for Savanna or any other host site. No React, no build step."
+}

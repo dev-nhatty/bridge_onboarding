@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      # Change this before any real use.
+      JWT_SECRET: change-me-in-production
+      # Comma-separated list of host sites allowed to call the API. "*" is fine for the hackathon demo.
+      CORS_ORIGINS: "*"
+      DB_PATH: /data/bridge.db
+    volumes:
+      - bridge-data:/data
+
+volumes:
+  bridge-data:
