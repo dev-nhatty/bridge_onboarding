@@ -3,6 +3,7 @@ WORKDIR /app
 
 COPY package.json package-lock.json* ./
 COPY packages ./packages
+COPY integrations ./integrations
 RUN npm install && npm run build
 
 ENV NODE_ENV=production \

@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#ffffff" />
+    <title>Accessible registration | Savanna</title>
+    <link rel="stylesheet" href="assets/css/typekit-xgz4ilr-css.css" />
+    <link rel="stylesheet" href="assets/css/application_alx.css" media="all" />
+    <link rel="stylesheet" href="assets/css/app.css" media="all" />
+    <style>
+      .bridge-onboarding-shell {
+        max-width: 58rem;
+        margin: 0 auto;
+        padding: 2rem 1rem 4rem;
+      }
+      .bridge-onboarding-header {
+        margin-bottom: 1.5rem;
+      }
+      .bridge-onboarding-header a {
+        display: inline-block;
+        margin-bottom: 1rem;
+      }
+      .bridge-onboarding-title {
+        margin-bottom: .5rem;
+      }
+      .bridge-onboarding-intro {
+        max-width: 48rem;
+      }
+      #signup {
+        min-width: 0;
+      }
+      .bridge-onboarding-footer {
+        margin-top: 1.5rem;
+      }
+      .bridge-skip-link {
+        position: absolute;
+        left: .75rem;
+        top: .75rem;
+        z-index: 1000;
+        padding: .75rem 1rem;
+        background: #fff;
+        color: #172b4d;
+        transform: translateY(-200%);
+      }
+      .bridge-skip-link:focus {
+        transform: translateY(0);
+      }
+    </style>
+  </head>
+  <body class="bg-body-tertiary">
+    <a class="bridge-skip-link" href="#main-content">Skip to registration</a>
+    <main id="main-content" class="bridge-onboarding-shell">
+      <header class="bridge-onboarding-header">
+        <a href="/savanna/" aria-label="Back to Savanna home">← Back to Savanna</a>
+        <h1 class="bridge-onboarding-title">Accessible learner registration</h1>
+        <p class="bridge-onboarding-intro text-body-secondary">
+          Create your learner account or sign in. Choose English or Amharic and use the
+          accessibility and simple-language options available in the registration experience.
+        </p>
+      </header>
+
+      <section aria-labelledby="registration-heading">
+        <h2 id="registration-heading" class="visually-hidden">Registration form</h2>
+        <div id="signup"></div>
+      </section>
+
+      <footer class="bridge-onboarding-footer">
+        <p class="text-body-secondary">
+          Your accessibility and support preferences are used to help provide an accessible
+          learning experience.
+        </p>
+      </footer>
+    </main>
+
+    <script
+      src="/widget/bridge-onboarding.js"
+      data-target="#signup"
+      data-api="/api"
+      data-lang="en">
+    </script>
+  </body>
+</html>

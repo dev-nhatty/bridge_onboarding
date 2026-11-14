@@ -33,6 +33,7 @@ export function createApp(db, { jwtSecret, corsOrigins = '*' }) {
   app.use('/widget', express.static(path.join(here, '../../widget/dist')));
   app.use('/audio', express.static(path.join(here, '../public/audio')));
   app.use('/demo', express.static(path.join(here, '../../demo-host')));
+  app.use('/savanna', express.static(path.join(here, '../../../integrations/savanna')));
   app.get('/', (_req, res) => res.redirect('/demo/'));
 
   // eslint-disable-next-line no-unused-vars
