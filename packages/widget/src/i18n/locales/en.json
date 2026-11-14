@@ -5,19 +5,16 @@
   "tabs.label": "Choose what to do",
   "prefs.language": "Language",
   "prefs.simple": "Simple words and read aloud",
-
   "next": "Next",
   "back": "Back",
   "finish": "Create account",
   "progress": "Question {n} of {total}",
-
   "readAloud": "Read the question aloud",
   "speak": "Speak your answer",
   "listening": "Listening… speak now",
   "voice.unsupported": "Voice typing is not available on this device. Please type your answer.",
   "voice.error": "We could not hear you. Please try again, or type your answer.",
   "voice.heard": "We typed: {text}. You can change it.",
-
   "q.fullName": "What is your full name?",
   "hint.fullName": "Write the name you want us to call you.",
   "q.contact": "What is your phone number or email?",
@@ -42,7 +39,6 @@
   "q.password": "Choose a password",
   "hint.password": "Use at least 8 letters or numbers.",
   "showPassword": "Show the password",
-
   "simple.q.fullName": "What is your name?",
   "simple.hint.fullName": "Type or speak your name.",
   "simple.q.contact": "What is your phone number?",
@@ -53,7 +49,6 @@
   "simple.q.supportNote": "Do you want to tell us more?",
   "simple.q.password": "Make a secret word",
   "simple.hint.password": "At least 8 letters or numbers.",
-
   "err.required": "Please answer this question, or press Back.",
   "err.contact": "Please enter a phone number like 0911223344, or an email like name@example.com.",
   "err.passwordShort": "Your password needs at least 8 letters or numbers.",
@@ -65,21 +60,25 @@
   "saved": "Saved",
   "resume.send": "Send me a link to continue later",
   "resume.sent": "We sent you a link.",
-
   "done.title": "You are registered!",
   "done.body": "Welcome, {name}.",
   "done.jobs": "Show me jobs for me",
-
   "login.title": "Log in",
   "login.id": "Phone number or email",
   "login.password": "Password",
   "login.submit": "Log in",
-
   "jobs.title": "Jobs for you",
   "jobs.onlyMine": "Only jobs that give the support I need",
   "jobs.offers": "Support offered",
   "jobs.apply": "Apply",
   "jobs.applied": "Application sent",
   "jobs.empty": "No jobs found.",
-  "jobs.loadFailed": "We could not load the jobs. Please try again."
+  "jobs.loadFailed": "We could not load the jobs. Please try again.",
+  "voice.stop": "Stop listening",
+  "voice.permission": "Microphone access was blocked. Allow microphone access for this site in your browser settings, then try again.",
+  "voice.audio": "No microphone was found or the microphone is being used by another app. Check your microphone and try again.",
+  "voice.noSpeech": "We did not detect speech. Move closer to the microphone and try again.",
+  "voice.network": "Speech recognition could not connect. Check your internet connection and try again.",
+  "voice.language": "Speech recognition does not support the selected language in this browser.",
+  "voice.stopped": "Listening stopped."
 }
