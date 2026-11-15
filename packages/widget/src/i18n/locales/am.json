@@ -98,5 +98,11 @@
   "settings.autoReadOn": "ጥያቄዎችን በራስ-ሰር ማንበብ በርቷል።",
   "settings.autoReadOff": "ጥያቄዎችን በራስ-ሰር ማንበብ ጠፍቷል።",
   "settings.motionOn": "የተቀነሰ እንቅስቃሴ በርቷል።",
-  "settings.motionOff": "የተቀነሰ እንቅስቃሴ ጠፍቷል።"
+  "settings.motionOff": "የተቀነሰ እንቅስቃሴ ጠፍቷል።",
+  "settings.remember": "ቅንብሮችን በዚህ መሣሪያ ላይ አስቀምጥ",
+  "settings.sharedComputer": "ይህን በጋራ በሚጠቀሙበት ኮምፒውተር ላይ አይምረጡ።",
+  "settings.seedReadAloud": "ጽሑፍን ጮክ ብሎ ማንበብ",
+  "settings.seedLargeText": "ትልቅ ጽሑፍ",
+  "settings.seedAnd": " እና ",
+  "settings.seeded": "በምዝገባ ጊዜ እንደጠየቁት {settings} አብርተናል። ይህን በተደራሽነት ቅንብሮች ውስጥ መቀየር ይችላሉ።"
 }

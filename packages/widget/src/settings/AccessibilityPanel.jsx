@@ -1,6 +1,6 @@
 import { LANGUAGES } from '../i18n/index.js';
 
-export default function AccessibilityPanel({ prefs, t, announcement, onChange, onReset, onClose }) {
+export default function AccessibilityPanel({ prefs, t, announcement, rememberPrefs, onRememberChange, onChange, onReset, onClose }) {
   return (
     <section id="bridge-accessibility-panel" className="accessibility-panel" aria-label={t('settings.title')}
       onKeyDown={(event) => {
@@ -31,6 +31,10 @@ export default function AccessibilityPanel({ prefs, t, announcement, onChange, o
         <label className="settings-check"><input type="checkbox" checked={prefs.contrast === 'high'} onChange={(e) => onChange({ contrast: e.target.checked ? 'high' : 'normal' })} /><span>{t('settings.highContrast')}</span></label>
         <label className="settings-check"><input type="checkbox" checked={prefs.autoRead} onChange={(e) => onChange({ autoRead: e.target.checked })} /><span>{t('settings.autoRead')}</span></label>
         <label className="settings-check"><input type="checkbox" checked={prefs.reduceMotion} onChange={(e) => onChange({ reduceMotion: e.target.checked })} /><span>{t('settings.reduceMotion')}</span></label>
+      </div>
+      <div className="remember-settings">
+        <label className="settings-check"><input type="checkbox" checked={Boolean(rememberPrefs)} onChange={(e) => onRememberChange(e.target.checked)} /><span>{t('settings.remember')}</span></label>
+        <p>{t('settings.sharedComputer')}</p>
       </div>
       <div className="settings-actions"><button type="button" className="btn secondary" onClick={onReset}>{t('settings.reset')}</button></div>
       <p className="sr-only" role="status" aria-live="polite">{announcement}</p>

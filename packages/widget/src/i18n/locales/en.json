@@ -108,5 +108,11 @@
   "settings.autoReadOn": "Automatic read aloud on.",
   "settings.autoReadOff": "Automatic read aloud off.",
   "settings.motionOn": "Reduced motion on.",
-  "settings.motionOff": "Reduced motion off."
+  "settings.motionOff": "Reduced motion off.",
+  "settings.remember": "Remember settings on this device",
+  "settings.sharedComputer": "Do not tick this on a shared computer.",
+  "settings.seedReadAloud": "read-aloud",
+  "settings.seedLargeText": "large text",
+  "settings.seedAnd": " and ",
+  "settings.seeded": "We turned on {settings} because you asked for them when you registered. You can change this in Accessibility settings."
 }

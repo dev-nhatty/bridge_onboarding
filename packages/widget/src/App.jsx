@@ -6,11 +6,13 @@ import LoginForm from './LoginForm.jsx';
 import JobsList from './gateway/JobsList.jsx';
 import AccessibilityPanel from './settings/AccessibilityPanel.jsx';
 import { DEFAULT_PREFS, normalizePrefs } from './settings/prefs.js';
+import { clearPrefs, hasSavedPrefs, loadPrefs, savePrefs } from './settings/storage.js';
 
-export default function App({ api: apiBase, lang: initialLang, prefs: initialPrefs, prefill, bus, assets, resume, emit, modal = false }) {
+export default function App({ api: apiBase, lang: initialLang, prefs: initialPrefs, prefill, bus, assets, resume, emit, modal = false, openSettings = false }) {
   const api = useMemo(() => createApi(apiBase), [apiBase]);
-  const [prefs, setPrefs] = useState(() => normalizePrefs({ lang: initialLang, ...initialPrefs }, initialLang));
-  const [panelOpen, setPanelOpen] = useState(false);
+  const [prefs, setPrefs] = useState(() => normalizePrefs({ lang: initialLang, ...(loadPrefs() || {}), ...(initialPrefs || {}) }, initialLang));
+  const [rememberPrefs, setRememberPrefs] = useState(() => hasSavedPrefs());
+  const [panelOpen, setPanelOpen] = useState(Boolean(openSettings));
   const [announcement, setAnnouncement] = useState('');
   const [view, setView] = useState('register');
   const [session, setSession] = useState(null);
@@ -22,14 +24,26 @@ export default function App({ api: apiBase, lang: initialLang, prefs: initialPre
 
   useEffect(() => {
     if (!bus) return undefined;
+    const onOpenSettings = () => setPanelOpen(true);
+    const onHostUpdate = (event) => {
+      const detail = event.detail || {};
+      const hostLang = !rememberPrefs && ['en', 'am'].includes(detail.lang) ? { lang: detail.lang } : {};
+      const next = normalizePrefs({ ...prefs, ...hostLang, ...(detail.prefs || {}) }, prefs.lang);
+      setPrefs(next);
+      if (rememberPrefs) savePrefs(next);
+      emit('bridge:prefs', next);
+    };
+    bus.addEventListener('settings-open', onOpenSettings);
+    bus.addEventListener('host-update', onHostUpdate);
     const onPrefs = (event) => {
       const next = normalizePrefs({ ...prefs, ...(event.detail || {}) }, prefs.lang);
       setPrefs(next);
+      if (rememberPrefs) savePrefs(next);
       emit('bridge:prefs', next);
     };
     bus.addEventListener('prefs', onPrefs);
-    return () => bus.removeEventListener('prefs', onPrefs);
-  }, [bus, prefs, emit]);
+    return () => { bus.removeEventListener('prefs', onPrefs); bus.removeEventListener('settings-open', onOpenSettings); bus.removeEventListener('host-update', onHostUpdate); };
+  }, [bus, prefs, emit, rememberPrefs]);
 
   function updatePrefs(patch) {
     const next = normalizePrefs({ ...prefs, ...patch }, prefs.lang);
@@ -43,22 +57,49 @@ export default function App({ api: apiBase, lang: initialLang, prefs: initialPre
       reduceMotion: t(next.reduceMotion ? 'settings.motionOn' : 'settings.motionOff'),
     };
     setPrefs(next);
+    if (rememberPrefs) savePrefs(next);
     setAnnouncement(labels[changedKey] || t('settings.changed'));
     emit('bridge:prefs', next);
   }
 
   function mergeDraftPrefs(patch) {
-    setPrefs((current) => normalizePrefs({ ...current, ...patch }, current.lang));
+    setPrefs((current) => { const next = normalizePrefs({ ...current, ...patch }, current.lang); if (rememberPrefs) savePrefs(next); return next; });
+  }
+
+  function toggleRemember(checked) {
+    setRememberPrefs(checked);
+    if (checked) savePrefs(prefs); else clearPrefs();
   }
 
   function resetPrefs() {
     const next = normalizePrefs({ ...DEFAULT_PREFS, reduceMotion: DEFAULT_PREFS.reduceMotion }, 'en');
     setPrefs(next);
+    setRememberPrefs(false);
+    clearPrefs();
     setAnnouncement(t('settings.resetDone'));
     emit('bridge:prefs', next);
   }
 
   function onSession(res, next) { setSession(res); setView(next); }
+
+  function onLoginSuccess(res) {
+    const support = Array.isArray(res?.user?.support) ? res.user.support : [];
+    const patch = {};
+    if (support.includes('screenReader') && prefs.autoRead === DEFAULT_PREFS.autoRead) patch.autoRead = true;
+    if (support.includes('largeText') && prefs.textScale === DEFAULT_PREFS.textScale) patch.textScale = 150;
+    if (Object.keys(patch).length) {
+      const next = normalizePrefs({ ...prefs, ...patch }, prefs.lang);
+      setPrefs(next);
+      if (rememberPrefs) savePrefs(next);
+      const messages = [];
+      if (patch.autoRead) messages.push(t('settings.seedReadAloud'));
+      if (patch.textScale) messages.push(t('settings.seedLargeText'));
+      setAnnouncement(t('settings.seeded', { settings: messages.join(t('settings.seedAnd')) }));
+      emit('bridge:prefs', next);
+    }
+    onSession(res, 'jobs');
+  }
+
 
   const containerProps = {
     className: `bridge ${prefs.mode === 'simple' ? 'simple' : ''} ${modal ? 'modal-mode' : ''}`.trim(),
@@ -70,7 +111,8 @@ export default function App({ api: apiBase, lang: initialLang, prefs: initialPre
   };
 
   const settingsButton = (
-    <button ref={settingsButtonRef} type="button" className="accessibility-toggle" 
+    <button ref={settingsButtonRef} type="button" className="accessibility-toggle"
+      style={{ width: 'auto', height: 'auto', minWidth: 44, minHeight: 44, flex: '0 0 auto', boxSizing: 'border-box' }}
       aria-label={t('settings.title')} aria-expanded={panelOpen} aria-controls="bridge-accessibility-panel"
       onClick={() => setPanelOpen((open) => !open)}>
       <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -102,7 +144,7 @@ export default function App({ api: apiBase, lang: initialLang, prefs: initialPre
       </header> : <div className="prefs">{settingsButton}</div>}
 
       {panelOpen && <AccessibilityPanel prefs={prefs} t={t} announcement={announcement}
-        onChange={updatePrefs} onReset={resetPrefs}
+        rememberPrefs={rememberPrefs} onRememberChange={toggleRemember} onChange={updatePrefs} onReset={resetPrefs}
         onClose={() => { setPanelOpen(false); settingsButtonRef.current?.focus(); }} />}
 
       {(view === 'register' || view === 'login') && <nav aria-label={t('tabs.label')} className="tabs">
@@ -113,7 +155,7 @@ export default function App({ api: apiBase, lang: initialLang, prefs: initialPre
       {view === 'register' && <Wizard api={api} t={t} lang={prefs.lang} mode={prefs.mode} prefs={prefs} bus={bus} prefill={prefill}
         assets={assets} resumeToken={resume} emit={emit} modal={modal}
         onPrefs={mergeDraftPrefs} onRegistered={(res) => onSession(res, 'done')} />}
-      {view === 'login' && <LoginForm api={api} t={t} emit={emit} onLoggedIn={(res) => onSession(res, 'jobs')} />}
+      {view === 'login' && <LoginForm api={api} t={t} emit={emit} onLoggedIn={onLoginSuccess} />}
       {view === 'done' && <section><h2 tabIndex={-1} ref={doneRef}>{t('done.title')}</h2><p>{t('done.body', { name: session.user.fullName })}</p><div className="actions"><button type="button" className="btn primary" onClick={() => setView('jobs')}>{t('done.jobs')}</button></div></section>}
       {view === 'jobs' && <JobsList api={api} t={t} session={session} />}
     </div>

@@ -751,6 +751,25 @@
       box-shadow: 0 0 0 5px #0f172a;
     }
 
+
+    .host-accessibility-button {
+      position: fixed; z-index: 1000; right: 1rem; bottom: 1rem; min-height: 48px;
+      display: inline-flex; align-items: center; gap: .55rem; padding: .7rem 1rem;
+      color: #fff; background: #173b2b; border: 2px solid #fff; border-radius: 999px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.28); font: inherit; font-weight: 700; cursor: pointer;
+    }
+    .host-accessibility-button:focus-visible { outline: 3px solid #111; outline-offset: 3px; }
+    .registration-help { margin: 1rem 0 1.25rem; padding: 1rem 1.15rem; border: 1px solid #526b5b; border-left: 5px solid #2b6a3f; border-radius: 12px; background: #f2f7f2; color: #17251c; }
+    .registration-help[hidden] { display: none; }
+    .registration-help p { margin: 0 0 .8rem; line-height: 1.5; }
+    .registration-help-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+    .registration-help button { min-height: 44px; padding: .65rem 1rem; border: 2px solid #173b2b; border-radius: 8px; font: inherit; font-weight: 700; cursor: pointer; }
+    .registration-help .help-try { background: #173b2b; color: #fff; }
+    .registration-help .help-dismiss { background: #fff; color: #173b2b; }
+    .registration-help button:focus-visible { outline: 3px solid #111; outline-offset: 3px; }
+    @media (prefers-reduced-motion: no-preference) { .registration-help { transition: border-color .15s ease; } }
+    @media (max-width: 420px) { .host-accessibility-button { right: .5rem; bottom: .5rem; max-width: calc(100vw - 1rem); } }
+
     .launch-with-shortcut {
       display: flex;
       flex-direction: column;
@@ -846,6 +865,9 @@
         Create your learner account or sign in to access Savanna courses, cohorts, and self-paced modules. Choose English or Amharic (<span lang="am">አማርኛ</span>), with simple-language support and interactive voice assistance available throughout.
       </p>
     </div>
+
+    <!-- Contextual onboarding offer is inserted here when browser hints qualify. -->
+    <div id="registration-help-slot"></div>
 
     <!-- Promo Card -->
     <section class="promo-card" aria-label="Assisted onboarding option">
@@ -1073,6 +1095,9 @@
   <dialog id="wizard-dialog" aria-label="Digital Bridge Assisted Onboarding">
     <div id="signup"></div>
   </dialog>
+  <button type="button" id="host-accessibility-settings" class="host-accessibility-button" aria-label="Open accessibility settings">
+    <span aria-hidden="true">⚙</span><span>Accessibility settings</span>
+  </button>
 
   <!-- Widget Bundle Script (plain, no data-target) -->
   <script src="/widget/bridge-onboarding.js"></script>
@@ -1200,21 +1225,21 @@
 
       function openWizard(options = {}) {
         if (typeof options === 'string') options = { lang: options };
-        const { lang = 'en', prefs = {}, prefill } = options || {};
-        const targetPrefs = { lang, ...prefs };
+        const { lang = 'en', prefs = {}, prefill, openSettings = false } = options || {};
+        const targetPrefs = prefs;
         lastOpener = document.activeElement;
 
         if (!handle) {
           handle = window.DigitalBridge.mount(signup, {
             api: '/api', lang, assets: '', modal: true,
-            prefs: targetPrefs, prefill,
+            prefs: targetPrefs, prefill, openSettings,
           });
         } else {
-          handle.update({ prefs: targetPrefs, prefill });
+          handle.update({ lang, ...(Object.keys(targetPrefs).length ? { prefs: targetPrefs } : {}), prefill, openSettings });
         }
 
         if (!dialog.open) dialog.showModal();
-        handle?.focus();
+        if (!openSettings) handle?.focus();
         const url = new URL(window.location.href);
         url.searchParams.delete('assist');
         url.searchParams.delete('lang');
@@ -1242,6 +1267,8 @@
 
       const skipWizard = document.getElementById('skip-wizard');
       if (skipWizard) skipWizard.addEventListener('click', () => openWizard({ lang: 'en' }));
+      const outsideSettings = document.getElementById('host-accessibility-settings');
+      if (outsideSettings) outsideSettings.addEventListener('click', () => openWizard({ lang: 'en', openSettings: true }));
 
       document.addEventListener('keydown', (event) => {
         if (
@@ -1257,6 +1284,48 @@
         event.preventDefault();
         openWizard({ lang: 'en' });
       });
+
+
+      let offerShown = false;
+      const offerSlot = document.getElementById('registration-help-slot');
+      function showRegistrationHelp(event) {
+        if (offerShown) return;
+        try { if (sessionStorage.getItem('bridge.offer.dismissed') === '1') return; } catch { /* storage may be blocked */ }
+        const reasons = Array.isArray(event?.detail?.reasons) ? event.detail.reasons : [];
+        if (!reasons.length || !offerSlot) return;
+        offerShown = true;
+        const isAmharic = reasons.some((reason) => reason.id === 'lang-am');
+        const banner = document.createElement('section');
+        banner.className = 'registration-help';
+        banner.setAttribute('role', 'region');
+        banner.setAttribute('aria-label', 'Registration help');
+        if (isAmharic) banner.lang = 'am';
+        const paragraph = document.createElement('p');
+        paragraph.textContent = isAmharic
+          ? 'በደረጃ በደረጃ የሚመራ የምዝገባ ቅጽ እንዲጠቀሙ እንረዳዎታለን። በድምፅ ማንበብ፣ ቀላል ቃላት እና የአማርኛ ቋንቋ አማራጭ አለው።'
+          : 'You can use a guided, step-by-step registration form with read-aloud support, simpler wording, and an Amharic language option.';
+        const actions = document.createElement('div'); actions.className = 'registration-help-actions';
+        const tryButton = document.createElement('button'); tryButton.type = 'button'; tryButton.className = 'help-try';
+        tryButton.textContent = isAmharic ? 'የተመራውን ቅጽ ይሞክሩ' : 'Try the guided form';
+        const dismissButton = document.createElement('button'); dismissButton.type = 'button'; dismissButton.className = 'help-dismiss';
+        dismissButton.textContent = isAmharic ? 'አይፈልግም' : 'No thanks';
+        const prefs = {};
+        if (reasons.some((reason) => reason.id === 'high-contrast')) prefs.contrast = 'high';
+        if (reasons.some((reason) => reason.id === 'large-font')) prefs.textScale = 125;
+        if (reasons.some((reason) => reason.id === 'reduced-motion')) prefs.reduceMotion = true;
+        tryButton.addEventListener('click', () => openWizard({ lang: isAmharic ? 'am' : 'en', prefs }));
+        dismissButton.addEventListener('click', () => {
+          banner.remove();
+          try { sessionStorage.setItem('bridge.offer.dismissed', '1'); } catch { /* session storage may be blocked */ }
+          launchBtn?.focus();
+        });
+        actions.append(tryButton, dismissButton); banner.append(paragraph, actions);
+        offerSlot.insertAdjacentElement('afterend', banner);
+      }
+      document.addEventListener('bridge:offer', showRegistrationHelp);
+      document.addEventListener('DOMContentLoaded', () => {
+        if (typeof window.DigitalBridge?.suggest === 'function') window.DigitalBridge.suggest(document);
+      }, { once: true });
 
       function launchFromUrl() {
         const params = new URLSearchParams(window.location.search);

@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import css from './styles.css?inline';
+import { detectHints, shouldOffer, dispatchOffer } from './hints/hints.js';
 
 // Must be read synchronously, while the script is executing.
 const script = document.currentScript;
@@ -40,6 +41,7 @@ function mount(el, options = {}) {
       bus={bus}
       emit={emit}
       modal={Boolean(options.modal)}
+      openSettings={Boolean(options.openSettings)}
     />,
   );
   queueMicrotask(() => emit('bridge:ready'));
@@ -49,7 +51,7 @@ function mount(el, options = {}) {
     heading?.focus();
   };
 
-  if (options.modal) {
+  if (options.modal && !options.openSettings) {
     setTimeout(focus, 0);
   }
 
@@ -57,25 +59,36 @@ function mount(el, options = {}) {
     unmount: () => root.unmount(),
     focus,
     update: (values = {}) => {
-      if (values.prefs) bus.dispatchEvent(new CustomEvent('prefs', { detail: values.prefs }));
+      if (values.lang) bus.dispatchEvent(new CustomEvent('host-update', { detail: { lang: values.lang, prefs: values.prefs || {} } }));
+      else if (values.prefs && Object.keys(values.prefs).length) bus.dispatchEvent(new CustomEvent('prefs', { detail: values.prefs }));
       if (values.prefill) bus.dispatchEvent(new CustomEvent('prefill', { detail: values.prefill }));
+      if (values.openSettings) bus.dispatchEvent(new Event('settings-open'));
     },
   };
 }
 
-window.DigitalBridge = { mount };
+/**
+ * Read only browser language, data-saving/network hints, contrast/forced-colors/reduced-motion preferences,
+ * and computed default font size; optionally emit their reason codes locally. No values leave the browser.
+ */
+function suggest(target = document) {
+  const reasons = detectHints();
+  const offer = shouldOffer(reasons);
+  if (offer) dispatchOffer(target, reasons);
+  return { reasons, offer };
+}
+
+window.DigitalBridge = { mount, suggest };
 
 // Level 1 install: <script src=".../bridge-onboarding.js" data-target="#signup" data-api="/api">
-if (script?.dataset.target) {
+if (script?.dataset.target || script?.hasAttribute('data-suggest')) {
   const run = () => {
-    const el = document.querySelector(script.dataset.target);
-    if (!el) return console.error(`[bridge] target ${script.dataset.target} not found`);
-    mount(el, {
-      api: script.dataset.api,
-      lang: script.dataset.lang,
-      assets: script.dataset.assets || new URL(script.src, window.location.href).origin,
-      resume: script.dataset.resume,
-    });
+    if (script.dataset.target) {
+      const el = document.querySelector(script.dataset.target);
+      if (!el) return console.error(`[bridge] target ${script.dataset.target} not found`);
+      mount(el, { api: script.dataset.api, lang: script.dataset.lang, assets: script.dataset.assets || new URL(script.src, window.location.href).origin, resume: script.dataset.resume });
+    }
+    if (script.hasAttribute('data-suggest')) suggest(script.dataset.target ? document.querySelector(script.dataset.target) : document);
   };
   document.readyState === 'loading' ? document.addEventListener('DOMContentLoaded', run) : run();
 }
