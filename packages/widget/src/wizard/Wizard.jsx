@@ -7,7 +7,7 @@ import { useSpeech } from '../hooks/useSpeech.js';
 
 const ERROR_KEYS = { exists: 'err.exists', invalid_contact: 'err.contact' };
 
-export default function Wizard({ api, t, lang, mode, assets, resumeToken, onPrefs, emit, onRegistered }) {
+export default function Wizard({ api, t, lang, mode, assets, resumeToken, onPrefs, prefs, emit, onRegistered }) {
   const [s, dispatch] = useReducer(reducer, initialState);
   const speech = useSpeech({ lang, assets });
   const headingRef = useRef(null);
@@ -40,7 +40,7 @@ export default function Wizard({ api, t, lang, mode, assets, resumeToken, onPref
       return;
     }
     headingRef.current?.focus();
-    if (mode === 'simple') speech.speak(step.id, t(`q.${step.id}`));
+    if (prefs?.autoRead) speech.speak(step.id, t(`q.${step.id}`));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [step.id]);
 

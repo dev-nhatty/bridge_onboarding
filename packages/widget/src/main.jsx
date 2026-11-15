@@ -32,6 +32,7 @@ function mount(el, options = {}) {
       lang={options.lang ?? 'en'}
       assets={options.assets ?? ''}
       resume={resume}
+      prefs={options.prefs}
       emit={emit}
       modal={Boolean(options.modal)}
     />,
