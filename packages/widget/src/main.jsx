@@ -27,10 +27,30 @@ function mount(el, options = {}) {
 
   const root = createRoot(container);
   root.render(
-    <App api={options.api ?? '/api'} lang={options.lang ?? 'en'} assets={options.assets ?? ''} resume={resume} emit={emit} />,
+    <App
+      api={options.api ?? '/api'}
+      lang={options.lang ?? 'en'}
+      assets={options.assets ?? ''}
+      resume={resume}
+      emit={emit}
+      modal={Boolean(options.modal)}
+    />,
   );
   queueMicrotask(() => emit('bridge:ready'));
-  return { unmount: () => root.unmount() };
+
+  const focus = () => {
+    const heading = shadow.querySelector('h2[tabindex="-1"]');
+    heading?.focus();
+  };
+
+  if (options.modal) {
+    setTimeout(focus, 0);
+  }
+
+  return {
+    unmount: () => root.unmount(),
+    focus,
+  };
 }
 
 window.DigitalBridge = { mount };

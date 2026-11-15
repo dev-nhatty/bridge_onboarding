@@ -3,38 +3,1208 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Savanna (demo host) – Join Digital Bridge</title>
+  <title>Savanna – Accessible learner registration</title>
   <style>
-    body { font-family: Georgia, serif; margin: 0; background: #f4f1ea; color: #1b1b1b; }
-    header { background: #1b3a2f; color: #fff; padding: 1rem; }
-    main { max-width: 40rem; margin: 0 auto; padding: 1rem; }
-    pre { background: #fff; padding: .75rem; overflow: auto; border: 1px solid #ccc; }
+    :root {
+      --primary-red: #b5121b;
+      --primary-red-hover: #990f17;
+      --green: #2b6a3f;
+      --green-hover: #225432;
+      --navy: #0f172a;
+      --lavender-bg: #f8f7fd;
+      --lavender-pill: #eceefb;
+      --lavender-border: #c7d2fe;
+      --muted: #475569;
+      --border: #94a3b8;
+      --border-light: #e2e8f0;
+      --focus: #1a4fd6;
+      --card-bg: #ffffff;
+      --font-stack: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans Ethiopic", "Nyala", "Abyssinica SIL", sans-serif;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: var(--font-stack);
+      background-color: var(--lavender-bg);
+      color: var(--navy);
+      line-height: 1.5;
+      font-size: 1rem;
+      overflow-x: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font-family: inherit;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 2px;
+    }
+
+    /* 3.2.1 Header */
+    .site-header {
+      background: #ffffff;
+      position: relative;
+    }
+
+    .site-header::after {
+      content: '';
+      display: block;
+      height: 3px;
+      width: 100%;
+      background: linear-gradient(to right, var(--primary-red), var(--green));
+    }
+
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .header-back-link {
+      font-size: 0.85rem;
+      color: #334155;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .header-back-link:hover {
+      text-decoration: underline;
+    }
+
+    .header-brand {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--navy);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .brand-dot {
+      color: var(--primary-red);
+      font-size: 1.4rem;
+      line-height: 1;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .header-nav a {
+      font-size: 0.9rem;
+      color: #475569;
+      font-weight: 500;
+    }
+
+    .header-nav a:hover {
+      color: var(--navy);
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .header-lang-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.75rem;
+      background: transparent;
+      border: 1px solid var(--border-light);
+      border-radius: 20px;
+      font-size: 0.85rem;
+      color: #334155;
+      cursor: pointer;
+      min-height: 36px;
+    }
+
+    .header-account-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--primary-red);
+      color: #ffffff;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    /* Container */
+    .content-container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem 1.25rem;
+    }
+
+    /* 3.2.2 Sub-row */
+    .sub-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .sub-back-link {
+      color: var(--primary-red);
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .sub-back-link:hover {
+      text-decoration: underline;
+    }
+
+    .cohort-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--lavender-pill);
+      color: #1e293b;
+      padding: 0.35rem 0.85rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+
+    .badge-dot {
+      color: var(--green);
+      font-size: 0.9rem;
+    }
+
+    /* 3.2.3 Hero */
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      color: var(--green);
+      font-size: 0.9rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 2.5rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--navy);
+      margin: 0 0 1rem 0;
+      line-height: 1.15;
+    }
+
+    .lead-text {
+      max-width: 750px;
+      font-size: 1.05rem;
+      line-height: 1.7;
+      color: var(--muted);
+      margin: 0 0 2rem 0;
+    }
+
+    /* 3.2.4 Promo Card */
+    .promo-card {
+      background: radial-gradient(ellipse at top right, #fff1f2 0%, #ffffff 65%);
+      border: 1px solid #fecdd3;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(244, 63, 94, 0.05);
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .promo-left {
+      display: flex;
+      align-items: flex-start;
+      gap: 1.25rem;
+      flex: 1;
+    }
+
+    .promo-icon-tile {
+      width: 48px;
+      height: 48px;
+      background: #ffe4e6;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-red);
+      flex-shrink: 0;
+    }
+
+    .promo-content {
+      flex: 1;
+    }
+
+    .promo-title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.35rem;
+    }
+
+    .promo-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0;
+    }
+
+    .badge-recommended {
+      background: #dcfce7;
+      color: #14532d;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      letter-spacing: 0.02em;
+    }
+
+    .promo-text {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .promo-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-shrink: 0;
+    }
+
+    .btn-launch-primary {
+      background: var(--primary-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.25rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      min-height: 44px;
+      box-shadow: 0 2px 4px rgba(181, 18, 27, 0.2);
+    }
+
+    .btn-launch-primary:hover {
+      background: var(--primary-red-hover);
+    }
+
+    .btn-launch-am {
+      background: var(--lavender-pill);
+      color: #1e1b4b;
+      border: 1px solid var(--lavender-border);
+      border-radius: 8px;
+      padding: 0.7rem 1.1rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-launch-am:hover {
+      background: #e0e4f8;
+    }
+
+    /* 3.2.5 Form Card */
+    .form-card {
+      max-width: 660px;
+      margin: 0 auto;
+      background: var(--card-bg);
+      border-radius: 16px;
+      padding: 2.5rem 2rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+      border: 1px solid #f1f5f9;
+    }
+
+    .segmented-control {
+      background: #f1f3f9;
+      padding: 0.3rem;
+      border-radius: 8px;
+      display: inline-flex;
+      gap: 0.25rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .segmented-tab {
+      background: transparent;
+      border: none;
+      padding: 0.45rem 1.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #475569;
+      border-radius: 6px;
+      cursor: pointer;
+      min-height: 38px;
+    }
+
+    .segmented-tab.active {
+      background: var(--green);
+      color: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-heading {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin: 0 0 0.25rem 0;
+    }
+
+    .form-subcopy {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin: 0 0 1.5rem 0;
+    }
+
+    .host-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .label-row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+    }
+
+    label {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .field-hint {
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"],
+    select {
+      width: 100%;
+      min-height: 48px;
+      padding: 0.65rem 0.85rem;
+      font-size: 0.95rem;
+      font-family: inherit;
+      color: var(--navy);
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+    }
+
+    input::placeholder {
+      color: #64748b;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--focus);
+      box-shadow: 0 0 0 2px rgba(26, 79, 214, 0.2);
+    }
+
+    input[aria-invalid="true"] {
+      border-color: var(--primary-red);
+    }
+
+    .form-row-2col {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+
+    @media (min-width: 600px) {
+      .form-row-2col {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    .pw-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .pw-input-wrap input {
+      padding-right: 44px;
+    }
+
+    .pw-lock-icon {
+      position: absolute;
+      right: 12px;
+      color: var(--muted);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-toggle-pw {
+      background: none;
+      border: none;
+      color: var(--primary-red);
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .btn-toggle-pw:hover {
+      text-decoration: underline;
+    }
+
+    .form-group-checkbox {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      margin-top: 0.25rem;
+    }
+
+    .form-group-checkbox input[type="checkbox"] {
+      width: 1.15rem;
+      height: 1.15rem;
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+      accent-color: var(--green);
+      cursor: pointer;
+    }
+
+    .form-group-checkbox label {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: #334155;
+      line-height: 1.45;
+      cursor: pointer;
+    }
+
+    .covenant-link {
+      color: var(--primary-red);
+      text-decoration: underline;
+      font-weight: 500;
+    }
+
+    .btn-complete-reg {
+      background: var(--primary-red);
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.85rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      min-height: 48px;
+      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 2px 4px rgba(181, 18, 27, 0.2);
+    }
+
+    .btn-complete-reg:hover {
+      background: var(--primary-red-hover);
+    }
+
+    .accommodations-prompt {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 0.5rem 0 0 0;
+    }
+
+    .btn-link-wizard {
+      background: none;
+      border: none;
+      color: var(--primary-red);
+      text-decoration: underline;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .btn-link-wizard:hover {
+      color: var(--primary-red-hover);
+    }
+
+    .field-error {
+      color: var(--primary-red);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin: 0.25rem 0 0 0;
+    }
+
+    .success-banner {
+      background: #bbf7d0;
+      border: 1px solid #4ade80;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      color: #14532d;
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      line-height: 1.4;
+      margin-top: 0.75rem;
+    }
+
+    .success-icon {
+      flex-shrink: 0;
+      color: #166534;
+    }
+
+    /* 3.2.6 Footer */
+    .site-footer {
+      max-width: 1200px;
+      margin: 3rem auto 2rem auto;
+      padding: 1.5rem 1.5rem 0 1.5rem;
+      border-top: 1px solid #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      flex-wrap: wrap;
+    }
+
+    .footer-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      color: var(--navy);
+      font-weight: 600;
+    }
+
+    .footer-dot {
+      color: var(--primary-red);
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .footer-links a:hover {
+      color: var(--navy);
+      text-decoration: underline;
+    }
+
+    .footer-copy {
+      color: var(--muted);
+    }
+
+    /* Section 4 Modal Dialog */
+    dialog#wizard-dialog {
+      width: min(600px, calc(100vw - 2rem));
+      max-height: min(90dvh, 760px);
+      border-radius: 16px;
+      padding: 0;
+      overflow: hidden;
+      border: 0;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      background: #ffffff;
+    }
+
+    dialog#wizard-dialog::backdrop {
+      background: rgb(15 23 42 / 0.55);
+      backdrop-filter: blur(4px);
+    }
+
+    @media (max-width: 480px) {
+      dialog#wizard-dialog {
+        width: 100dvw;
+        height: 100dvh;
+        max-height: 100dvh;
+        border-radius: 0;
+        margin: 0;
+        max-width: none;
+      }
+    }
+
+    body:has(dialog[open]) {
+      overflow: hidden;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      dialog[open] {
+        animation: modal-fade-in 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      }
+      @keyframes modal-fade-in {
+        from {
+          opacity: 0;
+          transform: scale(0.96) translateY(8px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 720px) {
+      .header-nav {
+        display: none;
+      }
+
+      .promo-card {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .promo-actions {
+        flex-direction: column;
+        width: 100%;
+      }
+
+      .btn-launch-primary,
+      .btn-launch-am {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .site-footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 1rem;
+      }
+
+      .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      overflow: hidden;
+      clip: rect(0 0 0 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    [hidden],
+    .success-banner[hidden] {
+      display: none !important;
+    }
   </style>
 </head>
 <body>
-  <header><strong>Savanna</strong> – demo host page (not part of the plug-in)</header>
-  <main>
-    <h1>Join Digital Bridge</h1>
-    <p>The sign-up below is the plug-in. This page only adds one script tag.</p>
+  <!-- Header -->
+  <header class="site-header">
+    <div class="header-inner">
+      <div class="header-left">
+        <a href="#" class="header-back-link">← Back to Savanna</a>
+        <div class="header-brand">Savanna <span class="brand-dot" aria-hidden="true">•</span></div>
+      </div>
+      <nav aria-label="Primary" class="header-nav">
+        <a href="#">Overview</a>
+        <a href="#">Curriculum</a>
+        <a href="#">Admissions Support</a>
+      </nav>
+      <div class="header-right">
+        <button type="button" class="header-lang-btn" aria-label="Language: English (US)">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="2" y1="12" x2="22" y2="12"></line>
+            <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+          </svg>
+          <span>English (US)</span>
+          <svg aria-hidden="true" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </button>
+        <button type="button" class="header-account-btn" aria-label="Account">
+          <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
 
-    <!-- LEVEL 1 INSTALL: this is the whole integration. -->
-    <div id="signup"></div>
-    <script src="/widget/bridge-onboarding.js"
-            data-target="#signup"
-            data-api="/api"
-            data-lang="en"></script>
+  <main class="content-container">
+    <!-- Sub-row -->
+    <div class="sub-row">
+      <a href="#" class="sub-back-link">← Back to Savanna</a>
+      <div class="cohort-badge">
+        <span class="badge-dot" aria-hidden="true">●</span>
+        <span>Admissions Active • Cohort 2026-F26</span>
+      </div>
+    </div>
 
-    <h2>What the host page hears</h2>
-    <p>The plug-in tells the host page about events, so the host can create its own session.</p>
-    <pre id="log" aria-live="polite">(no events yet)</pre>
-    <script>
-      const log = document.getElementById('log');
-      ['bridge:ready', 'bridge:registered', 'bridge:login'].forEach((name) =>
-        document.getElementById('signup').addEventListener(name, (e) => {
-          const detail = { ...e.detail }; delete detail.token;      // never print tokens
-          log.textContent = (log.textContent.startsWith('(') ? '' : log.textContent + '\n') + name + ' ' + JSON.stringify(detail);
-        }));
-    </script>
+    <!-- Hero -->
+    <div class="hero-section">
+      <div class="eyebrow">
+        <svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <polyline points="9 12 11 14 15 10"></polyline>
+        </svg>
+        <span>Universal Access Learner Portal</span>
+      </div>
+      <h1>Accessible learner registration</h1>
+      <p class="lead-text">
+        Create your learner account or sign in to access Savanna courses, cohorts, and self-paced modules. Choose English or Amharic (<span lang="am">አማርኛ</span>), with simple-language support and interactive voice assistance available throughout.
+      </p>
+    </div>
+
+    <!-- Promo Card -->
+    <section class="promo-card" aria-label="Assisted onboarding option">
+      <div class="promo-left">
+        <div class="promo-icon-tile" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 8c0 1.5-.7 2.8-1.8 3.5"></path>
+            <path d="M22 5c0-.6-.1-1.2-.4-1.8"></path>
+            <path d="M19 15c1.8-.7 3-2.4 3-4.5"></path>
+          </svg>
+        </div>
+        <div class="promo-content">
+          <div class="promo-title-row">
+            <h2 class="promo-title">Need an assisted, spoken, or simplified walk-through?</h2>
+            <span class="badge-recommended">Recommended</span>
+          </div>
+          <p class="promo-text">
+            Launch Digital Bridge's step-by-step accessible onboarding wizard with voice reading aloud, speech recognition, simplified phrasing, and English / <span lang="am">አማርኛ</span> toggles.
+          </p>
+        </div>
+      </div>
+      <div class="promo-actions">
+        <button type="button" id="launch-wizard" class="btn-launch-primary">
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+            <path d="M14 9l3 3-3 3"></path>
+          </svg>
+          <span>Launch Accessible Wizard</span>
+        </button>
+        <button type="button" id="launch-wizard-am" class="btn-launch-am">
+          <span lang="am">አማርኛ መመሪያ</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- Form Card -->
+    <section class="form-card" aria-label="Registration Form">
+      <div role="tablist" aria-label="Registration Options" class="segmented-control">
+        <button type="button" role="tab" id="tab-register" aria-selected="true" aria-controls="panel-register" tabindex="0" class="segmented-tab active">
+          Register
+        </button>
+        <button type="button" role="tab" id="tab-signin" aria-selected="false" aria-controls="panel-signin" tabindex="-1" class="segmented-tab">
+          Sign In
+        </button>
+      </div>
+
+      <!-- Register Tabpanel -->
+      <div role="tabpanel" id="panel-register" aria-labelledby="tab-register">
+        <h2 class="form-heading">Standard Registration Form</h2>
+        <p class="form-subcopy">Fill in your learner profile directly below, or switch to the voice wizard at any time.</p>
+
+        <form id="host-reg-form" class="host-form" novalidate>
+          <div class="form-group">
+            <div class="label-row">
+              <label for="host-name">Full Name</label>
+              <span id="hint-host-name" class="field-hint">Required</span>
+            </div>
+            <input
+              id="host-name"
+              name="name"
+              type="text"
+              autocomplete="name"
+              placeholder="e.g. Abebe Bikila or Jane Doe"
+              aria-describedby="hint-host-name"
+              required
+            >
+            <p id="err-host-name" class="field-error" aria-live="polite" hidden></p>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="host-email">Email Address</label>
+              <span id="hint-host-email" class="field-hint">For course invites</span>
+            </div>
+            <input
+              id="host-email"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="learner@digitalbridge.edu"
+              aria-describedby="hint-host-email"
+              required
+            >
+            <p id="err-host-email" class="field-error" aria-live="polite" hidden></p>
+          </div>
+
+          <div class="form-group">
+            <label for="host-track">Initial Learning Track</label>
+            <select id="host-track" name="track">
+              <option value="wr100">WR 100: Fundamentals of Effective Communication (16-Week Paced)</option>
+              <option value="cs101">CS 101: Introduction to Inclusive Computing (Self-Paced)</option>
+              <option value="ds102">DS 102: Data Science & Accessibility Foundations (12-Week Paced)</option>
+            </select>
+          </div>
+
+          <div class="form-row-2col">
+            <div class="form-group">
+              <label for="host-lang">Instruction Language</label>
+              <select id="host-lang" name="instructionLanguage">
+                <option value="en">English (Primary)</option>
+                <option value="am" lang="am">አማርኛ (Amharic)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="host-phone">Phone Number (SMS updates)</label>
+              <input
+                id="host-phone"
+                name="phone"
+                type="tel"
+                autocomplete="tel"
+                placeholder="+251 91 123 4567"
+              >
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="label-row">
+              <label for="host-password">Create Password</label>
+              <button type="button" id="host-toggle-pw" class="btn-toggle-pw" aria-pressed="false" aria-controls="host-password">
+                Show password
+              </button>
+            </div>
+            <div class="pw-input-wrap">
+              <input
+                id="host-password"
+                name="password"
+                type="password"
+                autocomplete="new-password"
+                placeholder="Minimum 8 characters"
+                minlength="8"
+                aria-describedby="hint-host-pw"
+                required
+              >
+              <span class="pw-lock-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </span>
+            </div>
+            <span id="hint-host-pw" class="sr-only">Password must be at least 8 characters.</span>
+            <p id="err-host-password" class="field-error" aria-live="polite" hidden></p>
+          </div>
+
+          <div class="form-group-checkbox">
+            <input type="checkbox" id="host-terms" required>
+            <label for="host-terms">
+              I agree to the <a href="#" class="covenant-link">Savanna Learning Covenant</a>, including peer code of conduct, low-bandwidth data standards, and accessibility accommodations.
+            </label>
+          </div>
+          <p id="err-host-terms" class="field-error" aria-live="polite" hidden></p>
+
+          <button type="submit" class="btn-complete-reg">
+            <span>Complete Registration →</span>
+          </button>
+
+          <p class="accommodations-prompt">
+            Need immediate accommodations?
+            <button type="button" id="link-wizard" class="btn-link-wizard">Use voice/screen assisted setup</button>
+          </p>
+
+          <div id="host-reg-success" class="success-banner" role="status" hidden>
+            <svg class="success-icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+            <span>Accessible enrollment received! You will receive an SMS and email with cohort access instructions.</span>
+          </div>
+        </form>
+      </div>
+
+      <!-- Sign In Tabpanel -->
+      <div role="tabpanel" id="panel-signin" aria-labelledby="tab-signin" hidden>
+        <h2 class="form-heading">Sign In</h2>
+        <p class="form-subcopy">Sign in to your Savanna account to continue learning.</p>
+
+        <form id="host-signin-form" class="host-form" novalidate>
+          <div class="form-group">
+            <label for="signin-email">Email Address</label>
+            <input id="signin-email" name="email" type="email" autocomplete="email" placeholder="learner@digitalbridge.edu" required>
+            <p id="err-signin-email" class="field-error" aria-live="polite" hidden></p>
+          </div>
+          <div class="form-group">
+            <label for="signin-password">Password</label>
+            <input id="signin-password" name="password" type="password" autocomplete="current-password" placeholder="Your password" required>
+            <p id="err-signin-password" class="field-error" aria-live="polite" hidden></p>
+          </div>
+          <button type="submit" class="btn-complete-reg">
+            <span>Sign In →</span>
+          </button>
+          <div id="host-signin-success" class="success-banner" role="status" hidden>
+            <svg class="success-icon" aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="9 12 11 14 15 10"></polyline>
+            </svg>
+            <span>Signed in successfully! Redirecting to courses...</span>
+          </div>
+        </form>
+      </div>
+    </section>
   </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="footer-brand">
+      Savanna <span class="footer-dot">•</span> Inclusive Digital Learning
+    </div>
+    <div class="footer-links">
+      <a href="#">Accessibility Standards</a>
+      <a href="#">Privacy Policy</a>
+      <a href="#">Learner Support</a>
+    </div>
+    <div class="footer-copy">
+      © 2025 Savanna Learning Platform.
+    </div>
+  </footer>
+
+  <!-- Modal Dialog with Onboarding Widget -->
+  <dialog id="wizard-dialog" aria-label="Digital Bridge Assisted Onboarding">
+    <div id="signup"></div>
+  </dialog>
+
+  <!-- Widget Bundle Script (plain, no data-target) -->
+  <script src="/widget/bridge-onboarding.js"></script>
+
+  <!-- Host Page Logic -->
+  <script>
+    (function () {
+      // 1. ARIA Tabs Pattern
+      const tabList = document.querySelector('[role="tablist"]');
+      const tabs = tabList.querySelectorAll('[role="tab"]');
+      const panels = {
+        'tab-register': document.getElementById('panel-register'),
+        'tab-signin': document.getElementById('panel-signin'),
+      };
+
+      function activateTab(tab) {
+        tabs.forEach((t) => {
+          const isSelected = t === tab;
+          t.setAttribute('aria-selected', String(isSelected));
+          t.tabIndex = isSelected ? 0 : -1;
+          t.classList.toggle('active', isSelected);
+          const panel = panels[t.id];
+          if (panel) {
+            panel.hidden = !isSelected;
+          }
+        });
+      }
+
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => activateTab(tab));
+        tab.addEventListener('keydown', (e) => {
+          let targetTab = null;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+            targetTab = tabs[(index + 1) % tabs.length];
+          } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+            targetTab = tabs[(index - 1 + tabs.length) % tabs.length];
+          } else if (e.key === 'Home') {
+            targetTab = tabs[0];
+          } else if (e.key === 'End') {
+            targetTab = tabs[tabs.length - 1];
+          }
+          if (targetTab) {
+            e.preventDefault();
+            targetTab.focus();
+            activateTab(targetTab);
+          }
+        });
+      });
+
+      // 2. Password Visibility Toggle
+      const togglePwBtn = document.getElementById('host-toggle-pw');
+      const pwInput = document.getElementById('host-password');
+      if (togglePwBtn && pwInput) {
+        togglePwBtn.addEventListener('click', () => {
+          const isPw = pwInput.type === 'password';
+          pwInput.type = isPw ? 'text' : 'password';
+          togglePwBtn.setAttribute('aria-pressed', String(isPw));
+          togglePwBtn.textContent = isPw ? 'Hide password' : 'Show password';
+        });
+      }
+
+      // 3. Form Validation & Submission
+      const regForm = document.getElementById('host-reg-form');
+      const regSuccess = document.getElementById('host-reg-success');
+
+      if (regForm) {
+        regForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          let firstInvalid = null;
+
+          // Clear previous errors
+          regForm.querySelectorAll('input, select').forEach((input) => {
+            const errEl = document.getElementById(`err-${input.id}`);
+            if (errEl) {
+              errEl.hidden = true;
+              errEl.textContent = '';
+            }
+            input.removeAttribute('aria-invalid');
+          });
+
+          const inputs = regForm.querySelectorAll('input[required], select[required], input[minlength]');
+          inputs.forEach((input) => {
+            if (!input.checkValidity()) {
+              if (!firstInvalid) firstInvalid = input;
+              input.setAttribute('aria-invalid', 'true');
+              const errEl = document.getElementById(`err-${input.id}`);
+              if (errEl) {
+                errEl.hidden = false;
+                errEl.textContent = input.validationMessage;
+                const desc = input.getAttribute('aria-describedby') || '';
+                if (!desc.includes(`err-${input.id}`)) {
+                  input.setAttribute('aria-describedby', (desc + ` err-${input.id}`).trim());
+                }
+              }
+            }
+          });
+
+          if (firstInvalid) {
+            firstInvalid.focus();
+          } else {
+            regSuccess.hidden = false;
+            regSuccess.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          }
+        });
+      }
+
+      const signinForm = document.getElementById('host-signin-form');
+      const signinSuccess = document.getElementById('host-signin-success');
+      if (signinForm) {
+        signinForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          if (signinForm.checkValidity()) {
+            signinSuccess.hidden = false;
+          } else {
+            signinForm.reportValidity();
+          }
+        });
+      }
+
+      // 4. Wizard Modal Dialog Plumbing
+      const dialog = document.getElementById('wizard-dialog');
+      const signup = document.getElementById('signup');
+      let handle = null;
+      let mountedLang = null;
+      let lastOpener = null;
+
+      function openWizard(lang) {
+        const targetLang = lang || 'en';
+        lastOpener = document.activeElement;
+
+        if (!handle) {
+          mountedLang = targetLang;
+          handle = window.DigitalBridge.mount(signup, {
+            api: '/api',
+            lang: targetLang,
+            assets: '',
+            modal: true,
+          });
+        } else if (mountedLang !== targetLang) {
+          handle.unmount();
+          mountedLang = targetLang;
+          handle = window.DigitalBridge.mount(signup, {
+            api: '/api',
+            lang: targetLang,
+            assets: '',
+            modal: true,
+          });
+        }
+
+        dialog.showModal();
+        handle?.focus();
+      }
+
+      signup.addEventListener('bridge:close', () => {
+        dialog.close();
+      });
+
+      dialog.addEventListener('click', (e) => {
+        if (e.target === dialog) {
+          dialog.close();
+        }
+      });
+
+      dialog.addEventListener('close', () => {
+        if (lastOpener && typeof lastOpener.focus === 'function') {
+          lastOpener.focus();
+        }
+      });
+
+      const launchBtn = document.getElementById('launch-wizard');
+      const launchAmBtn = document.getElementById('launch-wizard-am');
+      const linkWizard = document.getElementById('link-wizard');
+
+      if (launchBtn) launchBtn.addEventListener('click', () => openWizard('en'));
+      if (launchAmBtn) launchAmBtn.addEventListener('click', () => openWizard('am'));
+      if (linkWizard) linkWizard.addEventListener('click', () => openWizard('en'));
+    })();
+  </script>
 </body>
 </html>

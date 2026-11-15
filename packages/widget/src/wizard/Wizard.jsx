@@ -101,44 +101,75 @@ export default function Wizard({ api, t, lang, mode, assets, resumeToken, onPref
   const pct = Math.round(((index + 1) / vis.length) * 100);
 
   return (
-    <form onSubmit={onSubmit} noValidate>
-      <div className="progress" aria-hidden="true">
-        <span className="progress-text">{t('progress', { n: index + 1, total: vis.length })}</span>
-        <span className="progress-bar"><span style={{ width: `${pct}%` }} /></span>
-      </div>
+    <form className="wizard-form" onSubmit={onSubmit} noValidate>
+      <div className="wizard-body">
+        <div className="progress">
+          <div className="progress-labels">
+            <span className="progress-text">{t('progress', { n: index + 1, total: vis.length })}</span>
+            <span className="progress-pct">{t('progress.pct', { pct })}</span>
+          </div>
+          <span className="progress-bar" aria-hidden="true"><span style={{ width: `${pct}%` }} /></span>
+        </div>
 
-      <StepField
-        key={step.id}
-        step={step}
-        value={s.answers[step.field]}
-        error={s.errorKey}
-        t={t}
-        speech={speech}
-        headingRef={headingRef}
-        fieldRef={fieldRef}
-        index={index}
-        total={vis.length}
-        onChange={(value) => dispatch({ type: 'answer', field: step.field, value })}
-      />
+        <StepField
+          key={step.id}
+          step={step}
+          value={s.answers[step.field]}
+          error={s.errorKey}
+          t={t}
+          lang={lang}
+          mode={mode}
+          speech={speech}
+          headingRef={headingRef}
+          fieldRef={fieldRef}
+          index={index}
+          total={vis.length}
+          onChange={(value) => dispatch({ type: 'answer', field: step.field, value })}
+        />
 
-      <div className="actions">
-        {index > 0 && (
-          <button type="button" className="btn secondary" onClick={() => dispatch({ type: 'go', index: index - 1 })}>
-            {t('back')}
-          </button>
+        {s.token && s.answers.contact && (
+          <button type="button" className="link" onClick={sendLink}>{t('resume.send')}</button>
         )}
-        <button type="submit" className="btn primary" disabled={s.status === 'submitting'}>
-          {isLast ? t('finish') : t('next')}
-        </button>
+
+        <p className={`status ${s.notice?.kind ?? ''}`} role="status">
+          {s.notice ? t(s.notice.key) : ''}
+        </p>
       </div>
 
-      {s.token && s.answers.contact && (
-        <button type="button" className="link" onClick={sendLink}>{t('resume.send')}</button>
-      )}
+      <footer className="wizard-footer">
+        <button
+          type="button"
+          className="btn-wizard-prev"
+          disabled={index === 0}
+          onClick={() => dispatch({ type: 'go', index: index - 1 })}
+        >
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>{t('back')}</span>
+        </button>
 
-      <p className={`status ${s.notice?.kind ?? ''}`} role="status">
-        {s.notice ? t(s.notice.key) : ''}
-      </p>
+        <button
+          type="button"
+          className="btn-wizard-save"
+          onClick={() => save(s.answers, index)}
+        >
+          {t('saveDraft')}
+        </button>
+
+        <button
+          type="submit"
+          className="btn-wizard-next"
+          disabled={s.status === 'submitting'}
+        >
+          <span>{isLast ? t('finish') : t('next')}</span>
+          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+            <polyline points="12 5 19 12 12 19"></polyline>
+          </svg>
+        </button>
+      </footer>
     </form>
   );
 }
