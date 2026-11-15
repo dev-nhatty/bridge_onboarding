@@ -7,8 +7,21 @@ import { useSpeech } from '../hooks/useSpeech.js';
 
 const ERROR_KEYS = { exists: 'err.exists', invalid_contact: 'err.contact' };
 
-export default function Wizard({ api, t, lang, mode, assets, resumeToken, onPrefs, prefs, emit, onRegistered }) {
-  const [s, dispatch] = useReducer(reducer, initialState);
+function sanitizePrefill(value) {
+  if (!value || typeof value !== 'object') return {};
+  const clean = {};
+  for (const key of ['fullName', 'contact']) {
+    if (typeof value[key] === 'string') clean[key] = value[key].trim().slice(0, 120);
+  }
+  return clean;
+}
+
+function createInitialState(prefill) {
+  return { ...initialState, answers: sanitizePrefill(prefill) };
+}
+
+export default function Wizard({ api, t, lang, mode, assets, resumeToken, onPrefs, prefs, emit, onRegistered, prefill, bus }) {
+  const [s, dispatch] = useReducer(reducer, prefill, createInitialState);
   const speech = useSpeech({ lang, assets });
   const headingRef = useRef(null);
   const fieldRef = useRef(null);
@@ -18,6 +31,20 @@ export default function Wizard({ api, t, lang, mode, assets, resumeToken, onPref
   const index = Math.min(s.index, vis.length - 1);
   const step = vis[index];
   const isLast = index === vis.length - 1;
+
+  useEffect(() => {
+    if (!bus) return undefined;
+    const onPrefill = (event) => {
+      const values = sanitizePrefill(event.detail);
+      for (const [field, value] of Object.entries(values)) {
+        if (s.answers[field] === undefined || s.answers[field] === null || s.answers[field] === '') {
+          dispatch({ type: 'answer', field, value });
+        }
+      }
+    };
+    bus.addEventListener('prefill', onPrefill);
+    return () => bus.removeEventListener('prefill', onPrefill);
+  }, [bus, s.answers]);
 
   // Resume from an SMS link (?resume=<token>)
   useEffect(() => {

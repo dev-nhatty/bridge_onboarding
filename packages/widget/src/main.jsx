@@ -7,11 +7,13 @@ const script = document.currentScript;
 
 /**
  * Mount the plug-in into any element.
- * options: { api, lang, assets, resume }
+ * options: { api, lang, assets, resume, prefs, prefill }
  *   api     base URL of the REST API, default "/api"
  *   lang    "en" | "am"
  *   assets  origin that serves /audio/<lang>/<step>.mp3, default: where this script came from
  *   resume  a resume token (also read from ?resume= in the page URL)
+ *   prefs   initial accessibility preferences
+ *   prefill initial fullName/contact answers
  */
 function mount(el, options = {}) {
   // Shadow DOM keeps host CSS out and our CSS in. Screen readers and axe-core read through it.
@@ -24,6 +26,7 @@ function mount(el, options = {}) {
 
   const emit = (name, detail = {}) => el.dispatchEvent(new CustomEvent(name, { detail, bubbles: true, composed: true }));
   const resume = options.resume ?? new URLSearchParams(window.location.search).get('resume') ?? undefined;
+  const bus = new EventTarget();
 
   const root = createRoot(container);
   root.render(
@@ -33,6 +36,8 @@ function mount(el, options = {}) {
       assets={options.assets ?? ''}
       resume={resume}
       prefs={options.prefs}
+      prefill={options.prefill}
+      bus={bus}
       emit={emit}
       modal={Boolean(options.modal)}
     />,
@@ -51,6 +56,10 @@ function mount(el, options = {}) {
   return {
     unmount: () => root.unmount(),
     focus,
+    update: (values = {}) => {
+      if (values.prefs) bus.dispatchEvent(new CustomEvent('prefs', { detail: values.prefs }));
+      if (values.prefill) bus.dispatchEvent(new CustomEvent('prefill', { detail: values.prefill }));
+    },
   };
 }
 

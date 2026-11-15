@@ -1151,59 +1151,72 @@
       const dialog = document.getElementById('wizard-dialog');
       const signup = document.getElementById('signup');
       let handle = null;
-      let mountedLang = null;
       let lastOpener = null;
 
-      function openWizard(lang) {
-        const targetLang = lang || 'en';
+      function openWizard(options = {}) {
+        if (typeof options === 'string') options = { lang: options };
+        const { lang = 'en', prefs = {}, prefill } = options || {};
+        const targetPrefs = { lang, ...prefs };
         lastOpener = document.activeElement;
 
         if (!handle) {
-          mountedLang = targetLang;
           handle = window.DigitalBridge.mount(signup, {
-            api: '/api',
-            lang: targetLang,
-            assets: '',
-            modal: true,
+            api: '/api', lang, assets: '', modal: true,
+            prefs: targetPrefs, prefill,
           });
-        } else if (mountedLang !== targetLang) {
-          handle.unmount();
-          mountedLang = targetLang;
-          handle = window.DigitalBridge.mount(signup, {
-            api: '/api',
-            lang: targetLang,
-            assets: '',
-            modal: true,
-          });
+        } else {
+          handle.update({ prefs: targetPrefs, prefill });
         }
 
-        dialog.showModal();
+        if (!dialog.open) dialog.showModal();
         handle?.focus();
+        const url = new URL(window.location.href);
+        url.searchParams.delete('assist');
+        url.searchParams.delete('lang');
+        url.searchParams.delete('resume');
+        window.history.replaceState({}, '', url.pathname + url.search + url.hash);
       }
 
-      signup.addEventListener('bridge:close', () => {
-        dialog.close();
-      });
+      // Exposed only to support the demo page's automated entry-flow tests.
+      window.__bridgeDemo = { openWizard };
 
+      signup.addEventListener('bridge:close', () => dialog.close());
       dialog.addEventListener('click', (e) => {
-        if (e.target === dialog) {
-          dialog.close();
-        }
+        if (e.target === dialog) dialog.close();
       });
-
       dialog.addEventListener('close', () => {
-        if (lastOpener && typeof lastOpener.focus === 'function') {
-          lastOpener.focus();
-        }
+        if (lastOpener && typeof lastOpener.focus === 'function') lastOpener.focus();
       });
 
       const launchBtn = document.getElementById('launch-wizard');
       const launchAmBtn = document.getElementById('launch-wizard-am');
       const linkWizard = document.getElementById('link-wizard');
+      if (launchBtn) launchBtn.addEventListener('click', () => openWizard({ lang: 'en' }));
+      if (launchAmBtn) launchAmBtn.addEventListener('click', () => openWizard({ lang: 'am' }));
+      if (linkWizard) linkWizard.addEventListener('click', () => openWizard({ lang: 'en' }));
 
-      if (launchBtn) launchBtn.addEventListener('click', () => openWizard('en'));
-      if (launchAmBtn) launchAmBtn.addEventListener('click', () => openWizard('am'));
-      if (linkWizard) linkWizard.addEventListener('click', () => openWizard('en'));
+      function launchFromUrl() {
+        const params = new URLSearchParams(window.location.search);
+        const assist = params.get('assist');
+        const resume = params.get('resume');
+        const langParam = params.get('lang');
+        const validAssist = ['simple', 'voice', 'large', '1'].includes(assist);
+        const validResume = typeof resume === 'string' && /^[a-f0-9]{32}$/i.test(resume);
+        if (!validAssist && !validResume) return;
+
+        const prefs = {};
+        if (assist === 'simple') Object.assign(prefs, { mode: 'simple', autoRead: true });
+        if (assist === 'voice') prefs.autoRead = true;
+        if (assist === 'large') Object.assign(prefs, { textScale: 150, contrast: 'high' });
+        const lang = ['en', 'am'].includes(langParam) ? langParam : 'en';
+        openWizard({ lang, prefs });
+      }
+
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', launchFromUrl, { once: true });
+      } else {
+        launchFromUrl();
+      }
     })();
   </script>
 </body>

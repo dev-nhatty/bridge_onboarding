@@ -7,7 +7,7 @@ import JobsList from './gateway/JobsList.jsx';
 import AccessibilityPanel from './settings/AccessibilityPanel.jsx';
 import { DEFAULT_PREFS, normalizePrefs } from './settings/prefs.js';
 
-export default function App({ api: apiBase, lang: initialLang, prefs: initialPrefs, assets, resume, emit, modal = false }) {
+export default function App({ api: apiBase, lang: initialLang, prefs: initialPrefs, prefill, bus, assets, resume, emit, modal = false }) {
   const api = useMemo(() => createApi(apiBase), [apiBase]);
   const [prefs, setPrefs] = useState(() => normalizePrefs({ lang: initialLang, ...initialPrefs }, initialLang));
   const [panelOpen, setPanelOpen] = useState(false);
@@ -19,6 +19,17 @@ export default function App({ api: apiBase, lang: initialLang, prefs: initialPre
   const settingsButtonRef = useRef(null);
 
   useEffect(() => { if (view === 'done') doneRef.current?.focus(); }, [view]);
+
+  useEffect(() => {
+    if (!bus) return undefined;
+    const onPrefs = (event) => {
+      const next = normalizePrefs({ ...prefs, ...(event.detail || {}) }, prefs.lang);
+      setPrefs(next);
+      emit('bridge:prefs', next);
+    };
+    bus.addEventListener('prefs', onPrefs);
+    return () => bus.removeEventListener('prefs', onPrefs);
+  }, [bus, prefs, emit]);
 
   function updatePrefs(patch) {
     const next = normalizePrefs({ ...prefs, ...patch }, prefs.lang);
@@ -59,7 +70,7 @@ export default function App({ api: apiBase, lang: initialLang, prefs: initialPre
   };
 
   const settingsButton = (
-    <button ref={settingsButtonRef} type="button" className="accessibility-toggle"
+    <button ref={settingsButtonRef} type="button" className="accessibility-toggle" 
       aria-label={t('settings.title')} aria-expanded={panelOpen} aria-controls="bridge-accessibility-panel"
       onClick={() => setPanelOpen((open) => !open)}>
       <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -99,7 +110,7 @@ export default function App({ api: apiBase, lang: initialLang, prefs: initialPre
         <button type="button" className="tab" aria-current={view === 'login' ? 'page' : undefined} onClick={() => setView('login')}>{t('tab.login')}</button>
       </nav>}
 
-      {view === 'register' && <Wizard api={api} t={t} lang={prefs.lang} mode={prefs.mode} prefs={prefs}
+      {view === 'register' && <Wizard api={api} t={t} lang={prefs.lang} mode={prefs.mode} prefs={prefs} bus={bus} prefill={prefill}
         assets={assets} resumeToken={resume} emit={emit} modal={modal}
         onPrefs={mergeDraftPrefs} onRegistered={(res) => onSession(res, 'done')} />}
       {view === 'login' && <LoginForm api={api} t={t} emit={emit} onLoggedIn={(res) => onSession(res, 'jobs')} />}
