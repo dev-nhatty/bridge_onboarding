@@ -1,19 +1,25 @@
 import { test, expect } from '@playwright/test';
 
-test('Savanna landing page links to the existing onboarding widget', async ({ page }) => {
+test('Savanna landing page sends registration to the demo onboarding page', async ({ page }) => {
   await page.goto('/savanna/');
 
   await expect(page.getByRole('heading', { name: 'Savanna static pages' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Register or sign in' })).toHaveAttribute(
     'href',
-    'onboarding.html',
+    '/demo/',
   );
 });
 
-test('Savanna onboarding page mounts the existing widget and serves its API', async ({ page }) => {
-  await page.goto('/savanna/onboarding.html');
+test('legacy Savanna onboarding URL redirects to the demo page', async ({ request }) => {
+  const response = await request.get('/savanna/onboarding.html', { maxRedirects: 0 });
 
-  await expect(page.getByRole('heading', { name: 'Accessible learner registration' })).toBeVisible();
+  expect(response.status()).toBe(302);
+  expect(response.headers().location).toBe('/demo/');
+});
+
+test('demo onboarding page mounts the existing widget and serves its API', async ({ page }) => {
+  await page.goto('/demo/');
+
   await page.waitForFunction(() => {
     const host = document.querySelector('#signup');
     return Boolean(host?.shadowRoot?.querySelector('.bridge'));

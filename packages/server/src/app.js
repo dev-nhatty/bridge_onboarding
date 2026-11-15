@@ -33,6 +33,10 @@ export function createApp(db, { jwtSecret, corsOrigins = '*' }) {
   app.use('/widget', express.static(path.join(here, '../../widget/dist')));
   app.use('/audio', express.static(path.join(here, '../public/audio')));
   app.use('/demo', express.static(path.join(here, '../../demo-host')));
+
+  // The Savanna registration entry point now lives on the integrated demo page.
+  // Keep the old URL working as a redirect so bookmarks cannot open a stale form.
+  app.get('/savanna/onboarding.html', (_req, res) => res.redirect(302, '/demo/'));
   app.use('/savanna', express.static(path.join(here, '../../../integrations/savanna')));
   app.get('/', (_req, res) => res.redirect('/demo/'));
 
