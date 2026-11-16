@@ -59,6 +59,68 @@ Set `CORS_ORIGINS` (comma-separated) to the host sites allowed to call the API.
 
 **Level 3 – open standards.** Not done yet. Ideas: LTI 1.3 launch, `schema.org/JobPosting` for `/api/jobs`.
 
+
+## Detecting needs and launching the wizard
+
+### Accessibility preferences
+
+The widget normalizes this preference object:
+
+```js
+{
+  lang: 'en' | 'am',
+  mode: 'normal' | 'simple',
+  textScale: 100 | 125 | 150,
+  contrast: 'normal' | 'high',
+  autoRead: boolean,
+  reduceMotion: boolean
+}
+```
+
+Defaults are English, normal wording, 100% text, normal contrast, read-aloud off, and the current system reduced-motion preference. `DigitalBridge.mount(element, options)` accepts:
+
+| Option | Meaning |
+|---|---|
+| `api` | API base URL; defaults to `/api`. |
+| `lang` | Initial language, `en` or `am`; defaults to `en`. |
+| `assets` | Base path for `/audio/<lang>/<step>.mp3`; direct JavaScript mounts default to an empty string. The script-tag installer defaults this to the script's origin. |
+| `resume` | Draft resume token; if omitted, the widget also checks the page's `?resume=` parameter. |
+| `modal` | Whether the widget is rendered in modal mode; defaults to `false`. |
+| `prefs` | Partial initial accessibility preferences, normalized to the allowed values above. |
+| `prefill` | Optional `{ fullName, contact }` strings. Each is trimmed and limited to 120 characters; no password is accepted. |
+
+The returned handle has `unmount()`, `focus()`, and `update(values)`. `update` can apply `lang`, `prefs`, and `prefill`; the demo host also uses `openSettings` to open the settings panel. Widget lifecycle and preference events are dispatched on the mount element; `bridge:offer` is dispatched on the target passed to `suggest` (the document by default). These events bubble and are composed.
+
+| Event | `detail` |
+|---|---|
+| `bridge:ready` | `{}` |
+| `bridge:registered` | `{ userId, fullName, token }` |
+| `bridge:login` | `{ userId, fullName, token }` |
+| `bridge:close` | `{}` |
+| `bridge:prefs` | The complete normalized preference object shown above. |
+| `bridge:offer` | `{ reasons: [{ id, strength }] }`, where `strength` is `strong` or `weak`. |
+
+### Browser hints and the offer policy
+
+Call `DigitalBridge.suggest(target = document)` to inspect local browser signals and, when appropriate, dispatch `bridge:offer`. It returns `{ reasons, offer }`. The detector reads browser language (`navigator.languages` / `navigator.language`), data-saving and effective-network information (`navigator.connection`), the `prefers-reduced-data`, `prefers-contrast`, `forced-colors`, and `prefers-reduced-motion` media queries, and the computed font size of a temporary hidden probe.
+
+The current reason IDs and strengths are:
+
+- **Strong:** `lang-am`, `save-data`.
+- **Weak:** `high-contrast`, `forced-colors`, `reduced-motion`, `slow-network`, `large-font`.
+
+An offer is made when at least one strong reason or at least two weak reasons are present. The demo host calls `DigitalBridge.suggest(document)` once on `DOMContentLoaded`. The script-tag installer can also opt in with `data-suggest`. Detection does not run automatically in the widget unless the host calls it or uses that attribute.
+
+The offer banner does not state a reason. Dismissing it stores only `bridge.offer.dismissed` in `sessionStorage` for that tab. Accessibility preferences are saved to `localStorage` under `bridge.prefs.v1` only after the learner opts in with **Remember settings**.
+
+### Host-page entry points
+
+The demo page provides the **Open the accessible step-by-step registration** skip button as the first keyboard stop. `Alt+Shift+A` is also available; it requires Alt and Shift, ignores Ctrl/Meta combinations, and does nothing while the dialog is already open.
+
+The inline **How can we help you?** chooser offers read-aloud, simple wording, larger/high-contrast text, and Amharic presets. The standard Register form also offers the wizard after the same field fails on two separate submissions, after three failed submissions overall, or after a required field stays focused for 45 seconds without input. That notice observes only the Register form. Continuing carries only the trimmed name and email (or phone if email is empty) into the wizard; it never carries a password, track, or covenant checkbox.
+
+A URL opens the wizard only when `assist` is one of `simple`, `voice`, `large`, or `1`, or when `resume` is a 32-character hexadecimal token. `assist=simple` enables simple wording and read-aloud; `assist=voice` enables read-aloud; `assist=large` selects 150% text and high contrast; `assist=1` adds no preset. A valid `lang=en` or `lang=am` selects the language but does not open the wizard by itself. The host removes `assist`, `lang`, and `resume` from the URL after opening.
+
 ## How it works
 
 ```
@@ -82,7 +144,8 @@ After the account exists the draft is emptied.
 - "Support I need" lives in its own table, with no medical proof asked for. The jobs filter runs per request and the server does not record it.
 - "Refer me through a partner" needs no ID at all.
 - Phone/email is one question, because many learners have only one of them.
-- Nothing is sent to a third party. Voice typing uses the browser's own speech service (Chrome sends audio to Google): the wizard says typing is always available.
+
+Needs detection runs locally and inspects browser language, data-saving/network hints, the reduced-data/high-contrast/forced-colors/reduced-motion media queries, and the computed font size of a temporary hidden probe. These signals and reason codes do not leave the browser or go to the Bridge server. No disability is inferred or stored, and the offer banner never states a reason. The only storage keys used by these features are `bridge.prefs.v1` in `localStorage` (written only after the learner opts in) and `bridge.offer.dismissed` in `sessionStorage` (written after dismissing the offer). Struggle counters and standard-form values remain in page memory; only the trimmed name and contact can be prefilled into the wizard. Optional voice typing uses the browser's Web Speech Recognition API; any audio processing by the browser/provider is outside this application's control. Keyboard typing remains available when speech recognition is unsupported.
 
 ## Known gaps (do these next, in this order)
 

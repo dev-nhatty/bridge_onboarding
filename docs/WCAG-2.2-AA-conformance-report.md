@@ -9,53 +9,72 @@
 
 | Method | Tool / version | Who | Result |
 |---|---|---|---|
-| Automated | axe-core (`npm run test:e2e`) | CI / team | _0 critical, 0 serious?_ |
-| Keyboard only | Chrome | _name_ | |
-| Screen reader (desktop) | NVDA _version_ + Firefox/Chrome | _co-designer_ | |
-| Screen reader (mobile) | TalkBack _Android version_ | _co-designer_ | |
-| Zoom 200% / reflow at 320px | Chrome | | |
-| Sound off (no audio-only information) | | | |
+| Automated | axe-core (`npm run test:e2e`) | This implementation session | Not run; dependencies are not installed in the supplied project. |
+| Keyboard only | Chrome | Not run in this session | Not tested. |
+| Screen reader (desktop) | NVDA + Firefox/Chrome | Co-designer session pending | Not tested. |
+| Screen reader (mobile) | TalkBack + Android | Co-designer session pending | Not tested. |
+| Zoom 200% / reflow at 320px | Chrome | Not run in this session | Not tested. |
+| Sound off (no audio-only information) | Browser | Not run in this session | Not tested. |
 
-Co-designer task: _"Register an account, then log in and open the job list, unaided."_ Result: _completed / not completed, time taken_.
+Co-designer task: _"Register an account, then log in and open the job list, unaided."_ Result: **Not tested in this delivery**; no co-designer observation has been recorded.
 
 ## Criteria
 
-Status: **Supports**, **Partially supports**, **Does not support**, **Not applicable**. Replace every `_todo_` with a real result and one line of evidence (a test, a screenshot, or a co-designer observation). The list below covers the criteria most relevant to a form widget. Before submitting, check the remaining WCAG 2.2 A/AA criteria against <https://www.w3.org/TR/WCAG22/> and add rows for any that apply.
+Status: **Supports**, **Partially supports**, **Does not support**, **Not applicable**, or **Not tested**. Replace each **Not tested** only when a real test, screenshot, or co-designer observation is available. The list below covers the criteria most relevant to a form widget. Before submitting, check the remaining WCAG 2.2 A/AA criteria against <https://www.w3.org/TR/WCAG22/> and add rows for any that apply.
 
 | SC | Name | Status | Evidence / notes |
 |---|---|---|---|
-| 1.1.1 | Non-text content | _todo_ | Icons are `aria-hidden`; every control has a text name. |
-| 1.3.1 | Info and relationships | _todo_ | Radio/checkbox groups use `role=radiogroup/group` labelled by the question heading; errors linked with `aria-describedby`. |
-| 1.3.2 | Meaningful sequence | _todo_ | |
-| 1.3.5 | Identify input purpose | _todo_ | `autocomplete` on name, username, new-password. |
-| 1.4.1 | Use of colour | _todo_ | Errors have a ⚠ icon and text, not just red. |
-| 1.4.3 | Contrast (minimum) | _todo_ | Palette in `styles.css` comments lists ratios; verify. |
-| 1.4.4 | Resize text | _todo_ | |
-| 1.4.10 | Reflow | _todo_ | Test at 320 CSS px / 400% zoom. |
-| 1.4.11 | Non-text contrast | _todo_ | Input and option borders `#5c5c5c`. |
-| 1.4.12 | Text spacing | _todo_ | |
-| 1.4.13 | Content on hover or focus | _todo_ | No hover-only content. |
-| 2.1.1 | Keyboard | _todo_ | `e2e/a11y.spec.js` completes registration with keyboard only. |
-| 2.1.2 | No keyboard trap | _todo_ | |
-| 2.2.1 | Timing adjustable | _todo_ | No time-outs anywhere in the wizard. |
-| 2.4.3 | Focus order | _todo_ | Focus moves to the question heading on each step. |
-| 2.4.6 | Headings and labels | _todo_ | |
-| 2.4.7 | Focus visible | _todo_ | |
-| 2.4.11 | Focus not obscured (minimum) | _todo_ | Check on a phone with the on-screen keyboard open. |
-| 2.5.3 | Label in name | _todo_ | |
-| 2.5.7 | Dragging movements | _todo_ | No dragging used. |
-| 2.5.8 | Target size (minimum) | _todo_ | Controls ≥ 44px. |
-| 3.1.1 | Language of page | _todo_ | Widget root carries `lang`. |
-| 3.1.2 | Language of parts | _todo_ | Language switcher options carry their own `lang`. |
-| 3.2.1 / 3.2.2 | On focus / on input | _todo_ | Nothing changes context until Next is pressed. |
-| 3.2.6 | Consistent help | _todo_ | |
-| 3.3.1 | Error identification | _todo_ | Plain text error next to the field; focus returns to it. |
-| 3.3.2 | Labels or instructions | _todo_ | |
-| 3.3.3 | Error suggestion | _todo_ | Errors say how to fix (e.g. example phone number). |
-| 3.3.7 | Redundant entry | _todo_ | Answers are autosaved and restored on resume. |
-| 3.3.8 | Accessible authentication (minimum) | _todo_ | Password field allows paste and password managers; no cognitive test. Show-password option. |
-| 4.1.2 | Name, role, value | _todo_ | |
-| 4.1.3 | Status messages | _todo_ | `role=status` live regions for saves and voice typing. |
+| 1.1.1 | Non-text content | Not tested | Icons are `aria-hidden`; every control has a text name. No test or co-designer evidence is recorded in this delivery. |
+| 1.3.1 | Info and relationships | Not tested | Radio/checkbox groups use `role=radiogroup/group` labelled by the question heading; errors linked with `aria-describedby`. No test or co-designer evidence is recorded in this delivery. |
+| 1.3.2 | Meaningful sequence | Not tested | No test or co-designer evidence is recorded in this delivery. |
+| 1.3.5 | Identify input purpose | Not tested | `autocomplete` on name, username, new-password. No test or co-designer evidence is recorded in this delivery. |
+| 1.4.1 | Use of colour | Not tested | Errors have a ⚠ icon and text, not just red. No test or co-designer evidence is recorded in this delivery. |
+| 1.4.3 | Contrast (minimum) | Not tested | High-contrast preference is implemented; no measured contrast audit or co-designer observation is recorded. |
+| 1.4.4 | Resize text | Not tested | The settings panel offers 100%, 125%, and 150% text sizes; `e2e/settings.spec.js` checks a size change, but the suite has not been run. |
+| 1.4.10 | Reflow | Not tested | `e2e/chooser.spec.js` checks the chooser at 320px and `e2e/offer.spec.js` checks the host page at 320px; settings-panel reflow and 400% zoom have no recorded result, and tests were not run. |
+| 1.4.11 | Non-text contrast | Not tested | High-contrast styling exists, but component-boundary and focus-indicator contrast have not been measured. |
+| 1.4.12 | Text spacing | Not tested | No test or co-designer evidence is recorded in this delivery. |
+| 1.4.13 | Content on hover or focus | Not tested | No hover-only content. No test or co-designer evidence is recorded in this delivery. |
+| 2.1.1 | Keyboard | Not tested | `e2e/a11y.spec.js` completes registration with keyboard only. No test or co-designer evidence is recorded in this delivery. |
+| 2.1.2 | No keyboard trap | Not tested | No test or co-designer evidence is recorded in this delivery. |
+| 2.1.4 | Character key shortcuts | Not tested | The host handles `Alt+Shift+A` and ignores Ctrl/Meta; `e2e/skiplink.spec.js` covers the shortcut but has not been run. |
+| 2.2.1 | Timing adjustable | Not tested | No time-outs anywhere in the wizard. No test or co-designer evidence is recorded in this delivery. |
+| 2.2.2 | Pause, stop, hide | Not tested | Reduced-motion preferences are applied to the widget and host animations; no manual or automated pause/stop/hide result is recorded. |
+| 2.4.1 | Bypass blocks | Not tested | `#skip-wizard` is the first body control and `e2e/skiplink.spec.js` checks first-Tab access; the suite has not been run. |
+| 2.4.3 | Focus order | Not tested | Focus moves to the question heading on each step. No test or co-designer evidence is recorded in this delivery. |
+| 2.4.6 | Headings and labels | Not tested | No test or co-designer evidence is recorded in this delivery. |
+| 2.4.7 | Focus visible | Not tested | No test or co-designer evidence is recorded in this delivery. |
+| 2.4.11 | Focus not obscured (minimum) | Not tested | Check on a phone with the on-screen keyboard open. No test or co-designer evidence is recorded in this delivery. |
+| 2.5.3 | Label in name | Not tested | No test or co-designer evidence is recorded in this delivery. |
+| 2.5.7 | Dragging movements | Not tested | No dragging used. No test or co-designer evidence is recorded in this delivery. |
+| 2.5.8 | Target size (minimum) | Not tested | Controls ≥ 44px. No test or co-designer evidence is recorded in this delivery. |
+| 3.1.1 | Language of page | Not tested | Widget root carries `lang`. No test or co-designer evidence is recorded in this delivery. |
+| 3.1.2 | Language of parts | Not tested | Language switcher options carry their own `lang`. No test or co-designer evidence is recorded in this delivery. |
+| 3.2.1 | On focus | Not tested | No focus handler opens the wizard; URL `lang` alone is not an auto-open trigger, but this criterion has no recorded manual result. |
+| 3.2.2 | On input | Not tested | Nothing changes context until Next is pressed. No test or co-designer evidence is recorded in this delivery. |
+| 3.2.6 | Consistent help | Not tested | No test or co-designer evidence is recorded in this delivery. |
+| 3.3.1 | Error identification | Not tested | Plain text error next to the field; focus returns to it. No test or co-designer evidence is recorded in this delivery. |
+| 3.3.2 | Labels or instructions | Not tested | No test or co-designer evidence is recorded in this delivery. |
+| 3.3.3 | Error suggestion | Not tested | Errors say how to fix (e.g. example phone number). No test or co-designer evidence is recorded in this delivery. |
+| 3.3.7 | Redundant entry | Not tested | Answers are autosaved and restored on resume. No test or co-designer evidence is recorded in this delivery. |
+| 3.3.8 | Accessible authentication (minimum) | Not tested | Password field allows paste and password managers; no cognitive test. Show-password option. No test or co-designer evidence is recorded in this delivery. |
+| 4.1.2 | Name, role, value | Not tested | No test or co-designer evidence is recorded in this delivery. |
+| 4.1.3 | Status messages | Not tested | Settings announcements use `role=status`; the offer banner is deliberately a `role=region`, not a live region, so its announcement behavior is not established. E2E tests were not run. |
+
+## Additional evidence and limits for the requested criteria
+
+The following statuses are deliberately **Not tested**: source code and test assertions are not evidence that the tests passed. `npm test` and `npm run test:e2e` were not run for this delivery, and no new co-designer observations were supplied. The e2e files mentioned in the evidence column are planned checks only.
+
+## README claims not verifiable from source inspection
+
+- The exact external processing destination for audio used by the browser's Web Speech Recognition implementation (for example, whether a particular Chrome version sends audio to Google) cannot be established from this application code. The app calls the browser API; the browser/provider controls its processing.
+- The general statement that many Android phones lack an Amharic speech voice cannot be verified for every device, OS version, browser, or installed voice pack from this repository. The claim that recorded prompts are a reliable substitute also needs device testing; the supplied audio folders contain only `.gitkeep` placeholders.
+- Whether Amharic strings have received native-speaker review is a human review status and cannot be determined from source code.
+- A successful co-designer task on NVDA, TalkBack, keyboard-only operation, or 200% zoom cannot be claimed until those sessions are observed and logged.
+- The README's "Quick start (about 5 minutes)" estimate and Docker claim (same URLs) have not been timed or exercised in this delivery.
+- The README's aspirational install-time checklist ("a stranger can install it ... in under an hour") is not a measured result.
+
+The earlier broad privacy wording has been narrowed in the README: local needs-detection signals and reason codes do not leave the browser, while browser speech-recognition processing remains under the browser/provider's control.
 
 ## Known issues and limitations
 

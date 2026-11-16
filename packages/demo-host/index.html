@@ -770,6 +770,34 @@
     @media (prefers-reduced-motion: no-preference) { .registration-help { transition: border-color .15s ease; } }
     @media (max-width: 420px) { .host-accessibility-button { right: .5rem; bottom: .5rem; max-width: calc(100vw - 1rem); } }
 
+
+    .struggle-notice:empty {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+    }
+    .struggle-notice {
+      padding: 1rem;
+      border: 1px solid #526b5b;
+      border-left: 5px solid var(--green);
+      border-radius: 10px;
+      background: #f2f7f2;
+      color: #17251c;
+      line-height: 1.5;
+    }
+    .struggle-notice p { margin: 0 0 .75rem; }
+    .struggle-notice-actions { display: flex; flex-wrap: wrap; gap: .65rem; }
+    .struggle-notice button {
+      min-height: 44px; padding: .65rem 1rem; border: 2px solid #173b2b;
+      border-radius: 8px; font: inherit; font-weight: 700; cursor: pointer;
+    }
+    .struggle-notice .struggle-continue { color: #fff; background: #173b2b; }
+    .struggle-notice .struggle-dismiss { color: #173b2b; background: #fff; }
+    .struggle-notice button:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .struggle-notice { animation: struggle-appear .16s ease-out; }
+      @keyframes struggle-appear { from { opacity: .75; } to { opacity: 1; } }
+    }
+
     .launch-with-shortcut {
       display: flex;
       flex-direction: column;
@@ -782,6 +810,93 @@
       font-size: 12px;
       line-height: 1.4;
       text-align: center;
+    }
+
+
+    .help-chooser {
+      max-width: 960px;
+      margin: -1.25rem auto 2rem;
+      border: 1px solid var(--lavender-border);
+      border-radius: 12px;
+      background: #ffffff;
+      color: var(--navy);
+      box-shadow: 0 3px 12px rgba(15, 23, 42, 0.04);
+    }
+    .help-chooser > summary {
+      min-height: 56px;
+      padding: .85rem 3rem .85rem 1.1rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: .2rem;
+      position: relative;
+      cursor: pointer;
+      font-weight: 700;
+      list-style: none;
+    }
+    .help-chooser > summary::-webkit-details-marker { display: none; }
+    .help-chooser > summary::after {
+      content: '⌄';
+      position: absolute;
+      right: 1.1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 1.5rem;
+      line-height: 1;
+      color: var(--green);
+    }
+    .help-chooser > summary:focus-visible {
+      outline: 3px solid var(--focus);
+      outline-offset: 3px;
+      border-radius: 10px;
+    }
+    .help-chooser-am {
+      font-size: .9rem;
+      font-weight: 500;
+      color: var(--muted);
+    }
+    .help-chooser-content { padding: 0 1.1rem 1.2rem; }
+    .help-chooser-content h2 {
+      margin: .25rem 0 1rem;
+      color: var(--navy);
+      font-size: 1.2rem;
+    }
+    .help-chooser-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: .85rem;
+    }
+    @media (min-width: 480px) {
+      .help-chooser-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    .help-chooser-card {
+      min-height: 100px;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: .9rem;
+      padding: .9rem 1rem;
+      text-align: left;
+      color: var(--navy);
+      background: #ffffff;
+      border: 2px solid var(--muted);
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .help-chooser-card svg {
+      width: 48px;
+      height: 48px;
+      flex: 0 0 48px;
+      color: var(--green);
+    }
+    .help-chooser-card-labels { display: flex; flex-direction: column; gap: .2rem; }
+    .help-chooser-card-labels strong { font-size: 1rem; color: var(--navy); }
+    .help-chooser-card-labels span[lang="am"] { font-size: .9rem; color: var(--muted); }
+    .help-chooser-card:hover { border-width: 3px; text-decoration: underline; text-underline-offset: 3px; }
+    .help-chooser-card:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+    @media (prefers-reduced-motion: no-preference) {
+      .help-chooser[open] > summary::after { transform: translateY(-50%) rotate(180deg); }
+      .help-chooser > summary::after { transition: transform .15s ease; }
     }
 
     .sr-only {
@@ -909,6 +1024,42 @@
       </div>
     </section>
 
+    <details class="help-chooser">
+      <summary>
+        <span>Not sure what you need? Choose how we can help</span>
+        <span class="help-chooser-am" lang="am">ምን እንደሚያስፈልግዎት እርግጠኛ አይደሉም? እንዴት ማገዝ እንደምንችል ይምረጡ</span>
+      </summary>
+      <section class="help-chooser-content" aria-labelledby="help-chooser-heading">
+        <h2 id="help-chooser-heading">How can we help you today?</h2>
+        <div class="help-chooser-grid">
+          <button type="button" class="help-chooser-card" data-chooser="read">
+            <svg aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 10h15a7 7 0 0 1 7 7v23a7 7 0 0 0-7-7H5z"></path><path d="M43 10H28a7 7 0 0 0-7 7v23a7 7 0 0 1 7-7h15z"></path><path d="M33 16h5M33 22h5"></path>
+            </svg>
+            <span class="help-chooser-card-labels"><strong>Read to me</strong><span lang="am">ያንብቡልኝ</span><span class="sr-only">Opens the registration wizard</span></span>
+          </button>
+          <button type="button" class="help-chooser-card" data-chooser="simple">
+            <svg aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 10h34v24H23l-9 7v-7H7z"></path><path d="M15 19h18M15 25h12"></path>
+            </svg>
+            <span class="help-chooser-card-labels"><strong>Simple words</strong><span lang="am">ቀላል ቃላት</span><span class="sr-only">Opens the registration wizard</span></span>
+          </button>
+          <button type="button" class="help-chooser-card" data-chooser="large">
+            <svg aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M7 39 19 9h10l12 30M12 27h24M24 9v30"></path><path d="M18 18h12"></path>
+            </svg>
+            <span class="help-chooser-card-labels"><strong>Bigger and clearer</strong><span lang="am">ትልቅና ግልጽ</span><span class="sr-only">Opens the registration wizard</span></span>
+          </button>
+          <button type="button" class="help-chooser-card" data-chooser="am">
+            <svg aria-hidden="true" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="24" cy="24" r="19"></circle><path d="M5 24h38M24 5c6 6 9 12 9 19s-3 13-9 19c-6-6-9-13-9-19s3-13 9-19z"></path>
+            </svg>
+            <span class="help-chooser-card-labels"><strong lang="am">አማርኛ</strong><span>Amharic</span><span class="sr-only">Opens the registration wizard</span></span>
+          </button>
+        </div>
+      </section>
+    </details>
+
     <!-- Form Card -->
     <section class="form-card" aria-label="Registration Form">
       <div role="tablist" aria-label="Registration Options" class="segmented-control">
@@ -1025,6 +1176,8 @@
             </label>
           </div>
           <p id="err-host-terms" class="field-error" aria-live="polite" hidden></p>
+
+          <div id="registration-struggle-notice" class="struggle-notice" role="status" aria-live="polite"></div>
 
           <button type="submit" class="btn-complete-reg">
             <span>Complete Registration →</span>
@@ -1164,6 +1317,78 @@
       const regSuccess = document.getElementById('host-reg-success');
 
       if (regForm) {
+        // Local-only struggle detection: submit attempts and one required-field focus timer.
+        const struggleNotice = document.getElementById('registration-struggle-notice');
+        const failedByField = new Map();
+        let failedSubmitAttempts = 0;
+        let struggleShown = false;
+        let struggleDismissed = false;
+        let requiredFocusTimer = null;
+        let focusedRequiredField = null;
+
+        function clearRequiredFocusTimer() {
+          if (requiredFocusTimer !== null) {
+            window.clearTimeout(requiredFocusTimer);
+            requiredFocusTimer = null;
+          }
+          focusedRequiredField = null;
+        }
+
+        function showStruggleNotice() {
+          if (struggleShown || struggleDismissed || !struggleNotice) return;
+          struggleShown = true;
+          const message = document.createElement('p');
+          message.textContent = 'Having trouble? Continue step by step, and we will keep what you have typed.';
+          const actions = document.createElement('div');
+          actions.className = 'struggle-notice-actions';
+          const continueButton = document.createElement('button');
+          continueButton.type = 'button';
+          continueButton.className = 'struggle-continue';
+          continueButton.textContent = 'Continue in the wizard';
+          const dismissButton = document.createElement('button');
+          dismissButton.type = 'button';
+          dismissButton.className = 'struggle-dismiss';
+          dismissButton.textContent = 'Dismiss';
+
+          continueButton.addEventListener('click', () => {
+            struggleDismissed = true;
+            const fullName = (document.getElementById('host-name')?.value || '').trim().slice(0, 120);
+            const email = (document.getElementById('host-email')?.value || '').trim();
+            const phone = (document.getElementById('host-phone')?.value || '').trim();
+            const contact = (email || phone).slice(0, 120);
+            const lang = document.getElementById('host-lang')?.value === 'am' ? 'am' : 'en';
+            const returnFocus = document.getElementById('link-wizard') || document.getElementById('launch-wizard');
+            returnFocus?.focus();
+            struggleNotice.replaceChildren();
+            struggleNotice.hidden = true;
+            openWizard({ prefs: { lang }, prefill: { fullName, contact } });
+          });
+          dismissButton.addEventListener('click', () => {
+            struggleDismissed = true;
+            struggleNotice.replaceChildren();
+            struggleNotice.hidden = true;
+          });
+          actions.append(continueButton, dismissButton);
+          struggleNotice.replaceChildren(message, actions);
+          struggleNotice.hidden = false;
+        }
+
+        const requiredFields = regForm.querySelectorAll('input[required], select[required]');
+        requiredFields.forEach((field) => {
+          field.addEventListener('focus', () => {
+            clearRequiredFocusTimer();
+            focusedRequiredField = field;
+            requiredFocusTimer = window.setTimeout(() => {
+              if (focusedRequiredField === field && !struggleShown && !struggleDismissed) showStruggleNotice();
+              requiredFocusTimer = null;
+              focusedRequiredField = null;
+            }, 45000);
+          });
+          field.addEventListener('blur', clearRequiredFocusTimer);
+          field.addEventListener('input', clearRequiredFocusTimer);
+        });
+        window.addEventListener('pagehide', clearRequiredFocusTimer, { once: true });
+
         regForm.addEventListener('submit', (e) => {
           e.preventDefault();
           let firstInvalid = null;
@@ -1196,6 +1421,10 @@
           });
 
           if (firstInvalid) {
+            failedSubmitAttempts += 1;
+            const fieldFailures = (failedByField.get(firstInvalid.id) || 0) + 1;
+            failedByField.set(firstInvalid.id, fieldFailures);
+            if (fieldFailures >= 2 || failedSubmitAttempts >= 3) showStruggleNotice();
             firstInvalid.focus();
           } else {
             regSuccess.hidden = false;
@@ -1269,6 +1498,18 @@
       if (skipWizard) skipWizard.addEventListener('click', () => openWizard({ lang: 'en' }));
       const outsideSettings = document.getElementById('host-accessibility-settings');
       if (outsideSettings) outsideSettings.addEventListener('click', () => openWizard({ lang: 'en', openSettings: true }));
+
+      document.querySelectorAll('.help-chooser-card').forEach((card) => {
+        card.addEventListener('click', () => {
+          const presets = {
+            read: { prefs: { autoRead: true } },
+            simple: { prefs: { mode: 'simple', autoRead: true } },
+            large: { prefs: { textScale: 150, contrast: 'high' } },
+            am: { lang: 'am' },
+          };
+          openWizard(presets[card.dataset.chooser] || {});
+        });
+      });
 
       document.addEventListener('keydown', (event) => {
         if (
